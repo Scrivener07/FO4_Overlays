@@ -1,7 +1,5 @@
-Scriptname HaloHelmet:Menu extends HaloHelmet:MenuType Hidden
-import HaloHelmet:Log
-
-DisplayData Display
+Scriptname Fallout:Overlays:Menu extends Fallout:Overlays:Type
+import Fallout:Overlays:Papyrus
 
 
 ; Events
@@ -14,15 +12,13 @@ EndEvent
 
 
 Event OnGameReload()
-	Display = NewDisplay()
-
 	UI:MenuData data = new UI:MenuData
 	data.MenuFlags = FlagNone
 	; data.MovieFlags = 0
 	data.ExtendedFlags = 0
 	data.Depth = -1000 ; halp me lol
 
-	If (UI.RegisterCustomMenu(Display.Menu, Display.Asset, Display.Root, data))
+	If (UI.RegisterCustomMenu(Name, Path, Instance, data))
 		WriteLine(self, ToString()+" has registered as a custom menu.")
 	Else
 		WriteUnexpected(self, "OnGameReload", ToString()+" failed to register as a custom menu.")
@@ -33,14 +29,9 @@ EndEvent
 ; Methods
 ;---------------------------------------------
 
-DisplayData Function NewDisplay()
-	return new DisplayData
-EndFunction
-
-
 bool Function Open()
-	If (UI.IsMenuRegistered(Menu))
-		return UI.OpenMenu(Menu)
+	If (UI.IsMenuRegistered(Name))
+		return UI.OpenMenu(Name)
 	Else
 		WriteUnexpected(self, "Open", ToString()+" is not registered.")
 		return false
@@ -49,8 +40,8 @@ EndFunction
 
 
 bool Function Close()
-	If (UI.IsMenuRegistered(Menu))
-		return UI.CloseMenu(Menu)
+	If (UI.IsMenuRegistered(Name))
+		return UI.CloseMenu(Name)
 	Else
 		WriteUnexpected(self, "Close", ToString()+" is not registered.")
 		return false
@@ -59,8 +50,8 @@ EndFunction
 
 
 bool Function GetVisible()
-	If (UI.IsMenuOpen(Menu))
-		return UI.Get(Menu, GetMember("Visible")) as bool
+	If (UI.IsMenuOpen(Name))
+		return UI.Get(Name, GetMember("Visible")) as bool
 	Else
 		WriteUnexpected(self, "GetVisible", ToString()+" is not open.")
 		return false
@@ -69,9 +60,9 @@ EndFunction
 
 
 bool Function SetVisible(bool value)
-	If (UI.IsMenuOpen(Menu))
+	If (UI.IsMenuOpen(Name))
 		WriteLine(self, ToString()+" setting visible to "+value)
-		return UI.Set(Menu, GetMember("Visible"), value)
+		return UI.Set(Name, GetMember("Visible"), value)
 	Else
 		WriteUnexpected(self, "SetVisible", ToString()+" is not open.")
 		return false
@@ -79,48 +70,65 @@ bool Function SetVisible(bool value)
 EndFunction
 
 
+; Functions
+;---------------------------------------------
+
 string Function GetMember(string member)
 	{Returns the full AS3 instance path for the given member name.}
 	If (StringIsNoneOrEmpty(member))
-		WriteUnexpectedValue(self, "GetMember", "member", "Cannot operate on a none or empty display member.")
+		WriteUnexpectedValue(self, "GetMember", "member", "Cannot operate on a none or empty member.")
 		return none
-	ElseIf (StringIsNoneOrEmpty(root))
-		WriteUnexpected(self, "GetMember", "Cannot operate on a none or empty display root.")
+	ElseIf (StringIsNoneOrEmpty(Instance))
+		WriteUnexpected(self, "GetMember", "Cannot operate on a none or empty instance path.")
 		return none
 	Else
-		return Root+"."+member
+		return Instance+"."+member
 	EndIf
 EndFunction
 
 
-; Functions
-;---------------------------------------------
-
 string Function ToString()
 	{The string representation of this type.}
-	return "[Menu:"+Menu+", Asset:"+Asset+", Root:"+Root+"]"
+	return "[Name:"+Name+", Path:"+Path+", Instance:"+Instance+"]"
 EndFunction
 
 
 ; Properties
 ;---------------------------------------------
 
-Group Display
-	string Property Menu Hidden
+Group Properties
+	string Property Name Hidden
 		string Function Get()
-			return Display.Menu
+			{The name of this menu.}
+			return "OverlayMenu"
+		EndFunction
+	EndProperty
+
+	string Property Path Hidden
+		string Function Get()
+			{The swf file path of this menu without the file extension. The root directory is "Data\Interface".}
+			return "OverlayMenu"
 		EndFunction
 	EndProperty
 
 	string Property Root Hidden
 		string Function Get()
-			return Display.Root
+			{The root display object of this menu.}
+			return "root1"
 		EndFunction
 	EndProperty
 
-	string Property Asset Hidden
+	string Property Instance Hidden
 		string Function Get()
-			return Display.Asset
+			{The root instance path of this menu.}
+			return Root+".Menu"
+		EndFunction
+	EndProperty
+
+	bool Property IsOpen Hidden
+		bool Function Get()
+			{Returns true if this menu is open.}
+			return UI.IsMenuOpen(Name)
 		EndFunction
 	EndProperty
 EndGroup

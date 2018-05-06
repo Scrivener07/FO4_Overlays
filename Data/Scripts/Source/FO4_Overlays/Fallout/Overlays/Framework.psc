@@ -1,25 +1,28 @@
-Scriptname HaloHelmet:Overlay extends HaloHelmet:Menu
-import HaloHelmet:Log
+Scriptname Fallout:Overlays:Framework extends Fallout:Overlays:Type
+import Fallout
+import Fallout:Overlays:Papyrus
 
 Actor Player
 
-string EmptyState = "" const
-string EquippedState = "Equipped" const
+;/ Bugs
+	Loading doors causes the menu to uload itself, and not reload until after equipping again.
+	Bitmaps are still not rendered correctly sometimes, affected by tinting.
+/;
 
-int CameraFirstPerson = 0 const
-
+;/ Path Conversion
+	; Male/Female world models
+	; OMOD variants
+/;
 
 ; Events
 ;---------------------------------------------
 
 Event OnInit()
-	parent.OnInit()
 	Player = Game.GetPlayer()
 EndEvent
 
 
 Event OnQuestInit()
-	parent.OnQuestInit()
 	RegisterForRemoteEvent(Player, "OnItemEquipped")
 	RegisterForRemoteEvent(Player, "OnItemUnequipped")
 	GiveTestItems()
@@ -27,9 +30,9 @@ EndEvent
 
 
 Event OnQuestShutdown()
-	parent.OnQuestShutdown()
 	UnregisterForRemoteEvent(Player, "OnItemEquipped")
 	UnregisterForRemoteEvent(Player, "OnItemUnequipped")
+	GotoState(EmptyState)
 EndEvent
 
 
@@ -47,6 +50,7 @@ Event Actor.OnItemUnequipped(Actor akSender, Form akBaseObject, ObjectReference 
 EndEvent
 
 
+
 ; States
 ;---------------------------------------------
 
@@ -54,40 +58,33 @@ State Equipped
 	Event OnBeginState(string asOldState)
 		WriteLine(self, ToString()+" equipped.")
 		RegisterForCameraState()
-		self.Open()
-		; need a wait or callback here?
-		self.SetVisible(IsFirstPerson)
+		OverlayMenu.Open()
+		OverlayMenu.SetVisible(IsFirstPerson)
 	EndEvent
 
 	Event OnPlayerCameraState(int aiOldState, int aiNewState)
-		self.SetVisible(IsFirstPerson)
+		OverlayMenu.SetVisible(IsFirstPerson)
 	EndEvent
 
 	Event OnEndState(string asNewState)
 		WriteLine(self, ToString()+" unequipped.")
 		UnregisterForCameraState()
-		self.Close()
+		OverlayMenu.Close()
 	EndEvent
 EndState
-
-
-; Methods
-;---------------------------------------------
-
-DisplayData Function NewDisplay()
-	DisplayData display = new DisplayData
-	display.Menu = "HaloHelmetMenu"
-	display.Asset = "HaloHelmetMenu"
-	display.Root = "root1.Overlay"
-	return display
-EndFunction
 
 
 ; Functions
 ;---------------------------------------------
 
+string Function ToString()
+	{The string representation of this type.}
+	return GetState()
+EndFunction
+
+
 Function GiveTestItems() DebugOnly
-	Game.GetPlayer().AddItem(Armor_Synth_Helmet_Closed)
+	Player.AddItem(Armor_Synth_Helmet_Closed)
 	WriteLine(self, ToString()+" added "+Armor_Synth_Helmet_Closed+" for testing.")
 EndFunction
 
@@ -96,13 +93,27 @@ EndFunction
 ;---------------------------------------------
 
 Group Properties
-	Armor Property Armor_Synth_Helmet_Closed Auto Const Mandatory
+	Overlays:Menu Property OverlayMenu Auto Const Mandatory
+EndGroup
+
+Group States
+	string Property EmptyState = "" AutoReadOnly
+	string Property EquippedState = "Equipped" AutoReadOnly
 EndGroup
 
 Group Camera
+	int Property CameraFirstPerson = 0 AutoReadOnly
+
 	bool Property IsFirstPerson Hidden
 		bool Function Get()
 			return Player.GetAnimationVariableBool("IsFirstPerson")
 		EndFunction
 	EndProperty
+EndGroup
+
+Group Debugging
+	Armor Property Armor_Synth_Helmet_Closed Auto Const Mandatory
+	;/
+		World Model: Armor\Synth\HelmetHeavyGO.nif @Meshes
+	/;
 EndGroup
