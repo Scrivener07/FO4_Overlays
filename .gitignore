@@ -1,7 +1,12 @@
-/Files/binder.autosave
-/Files/binder.backup
-/Files/search.indexes
-/Files/user.lock
-/Files/Docs/docs.checksum
-/QuickLook/
-/Settings/ui.plist
+# Windows
+# =========================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.exe
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
