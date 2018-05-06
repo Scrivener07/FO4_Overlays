@@ -2,17 +2,16 @@
 {
 	import flash.display.MovieClip;
 
-	public class Overlay extends MovieClip
+	public class OverlayMenu extends MovieClip
 	{
 		public function get Visible():Boolean { return this.visible; }
 		public function set Visible(argument:Boolean):void { this.visible = argument; }
 
-		public function Overlay()
+		public function OverlayMenu()
 		{
 			// constructor code
-			trace("Halo Helmet");
+			trace("helmet overlays, derp derp");
 		}
-
 
 	}
 }
