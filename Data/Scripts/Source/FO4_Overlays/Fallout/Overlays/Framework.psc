@@ -1,18 +1,10 @@
 Scriptname Fallout:Overlays:Framework extends Fallout:Overlays:Type
 import Fallout
+import Fallout:Overlays
 import Fallout:Overlays:Papyrus
 
 Actor Player
 
-;/ Bugs
-	Loading doors causes the menu to uload itself, and not reload until after equipping again.
-	Bitmaps are still not rendered correctly sometimes, affected by tinting.
-/;
-
-;/ Path Conversion
-	; Male/Female world models
-	; OMOD variants
-/;
 
 ; Events
 ;---------------------------------------------
@@ -37,18 +29,48 @@ EndEvent
 
 
 Event Actor.OnItemEquipped(Actor sender, Form akBaseObject, ObjectReference akReference)
-	If (akBaseObject == Armor_Synth_Helmet_Closed)
-		GotoState(EquippedState)
-	EndIf
+	WriteLine(self, "Actor.OnItemEquipped, akBaseObject: "+akBaseObject)
+
+	; Armor equipped = akBaseObject as Armor
+	; If (equipped)
+	; 	WriteLine(self, "equipped: "+equipped)
+	; Else
+	; 	WriteUnexpectedValue(self, "Actor.OnItemEquipped", "equipped", "akBaseObject failed to cast to an Armor type.")
+	; EndIf
+
+	; Armor item = GetWorn()
+	; If (item)
+	; 	WriteLine(self, "item: "+item)
+	; Else
+	; 	WriteUnexpectedValue(self, "Actor.OnItemEquipped", "item", "GetWorn failed to return an Armor item.")
+	; EndIf
+
+	; string modelPath = akBaseObject.GetWorldModelPath()
+	; If (!StringIsNoneOrEmpty(modelPath))
+	; 	WriteLine(self, "modelPath: "+modelPath)
+	; Else
+	; 	WriteUnexpectedValue(self, "Actor.OnItemEquipped", "modelPath", "Is none or empty.")
+	; EndIf
+
+	OverlayMenu.Open()
+	OverlayMenu.SetOverlay("Armor\\Synth\\HelmetHeavyGO.png") ; testing!
+	OverlayMenu.SetVisible(IsFirstPerson)
+
+	GotoState(EquippedState)
+
+	; Armor worn = GetWorn()
+	; If (worn)
+	; Else
+	; 	WriteUnexpectedValue(self, "Actor.OnItemEquipped", "worn", "Is none or empty.")
+	; EndIf
 EndEvent
 
 
 Event Actor.OnItemUnequipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
-	If (akBaseObject == Armor_Synth_Helmet_Closed)
-		GotoState(EmptyState)
-	EndIf
+	; If (GetWorn() == none)
+	; 	GotoState(EmptyState)
+	; EndIf
 EndEvent
-
 
 
 ; States
@@ -56,22 +78,42 @@ EndEvent
 
 State Equipped
 	Event OnBeginState(string asOldState)
-		WriteLine(self, ToString()+" equipped.")
+		WriteLine(self, ToString()+" OnBeginState.")
 		RegisterForCameraState()
-		OverlayMenu.Open()
-		OverlayMenu.SetVisible(IsFirstPerson)
+		; OverlayMenu.Open()
+		; OverlayMenu.SetVisible(IsFirstPerson)
 	EndEvent
+
 
 	Event OnPlayerCameraState(int aiOldState, int aiNewState)
+		; This might be called too much?
 		OverlayMenu.SetVisible(IsFirstPerson)
 	EndEvent
 
+
 	Event OnEndState(string asNewState)
-		WriteLine(self, ToString()+" unequipped.")
+		WriteLine(self, ToString()+" OnEndState.")
 		UnregisterForCameraState()
 		OverlayMenu.Close()
 	EndEvent
 EndState
+
+
+; Methods
+;---------------------------------------------
+
+Armor Function GetWorn()
+	{Returns the worn item at the players "eyes" slot index.}
+	int EyesIndex = 17 const
+	Actor:WornItem worn = Player.GetWornItem(EyesIndex)
+	If (worn)
+		WriteLine(self, "Worn is "+worn)
+		return worn.Item as Armor
+	Else
+		WriteUnexpectedValue(self, "GetWorn", "worn", "Structure is none.")
+		return none
+	EndIf
+EndFunction
 
 
 ; Functions
@@ -79,7 +121,7 @@ EndState
 
 string Function ToString()
 	{The string representation of this type.}
-	return GetState()
+	return "Framework "+GetState()
 EndFunction
 
 
@@ -101,6 +143,10 @@ Group States
 	string Property EquippedState = "Equipped" AutoReadOnly
 EndGroup
 
+Group Equipped
+	int Property BipedEyes = 47 AutoReadOnly
+EndGroup
+
 Group Camera
 	int Property CameraFirstPerson = 0 AutoReadOnly
 
@@ -111,9 +157,6 @@ Group Camera
 	EndProperty
 EndGroup
 
-Group Debugging
-	Armor Property Armor_Synth_Helmet_Closed Auto Const Mandatory
-	;/
-		World Model: Armor\Synth\HelmetHeavyGO.nif @Meshes
-	/;
-EndGroup
+
+Armor Property Armor_Synth_Helmet_Closed Auto Const Mandatory
+{Debug Only}

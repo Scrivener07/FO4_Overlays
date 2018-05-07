@@ -14,10 +14,7 @@ EndEvent
 Event OnGameReload()
 	UI:MenuData data = new UI:MenuData
 	data.MenuFlags = FlagNone
-	; data.MovieFlags = 0
 	data.ExtendedFlags = 0
-	data.Depth = -1000 ; halp me lol
-
 	If (UI.RegisterCustomMenu(Name, Path, Instance, data))
 		WriteLine(self, ToString()+" has registered as a custom menu.")
 	Else
@@ -66,6 +63,18 @@ bool Function SetVisible(bool value)
 	Else
 		WriteUnexpected(self, "SetVisible", ToString()+" is not open.")
 		return false
+	EndIf
+EndFunction
+
+
+Function SetOverlay(string filePath)
+	If (filePath)
+		var[] arguments = new var[1]
+		arguments[0] = filePath
+		UI.Invoke(Name, GetMember("SetOverlay"), arguments)
+		WriteLine(self, "SetOverlay:"+filePath)
+	Else
+		WriteLine(self, "SetOverlay: Argument filePath cannot be none or empty.")
 	EndIf
 EndFunction
 
