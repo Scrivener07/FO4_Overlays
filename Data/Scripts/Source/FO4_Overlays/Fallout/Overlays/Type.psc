@@ -30,3 +30,17 @@ string Function ToString()
 	{The string representation of this type.}
 	return "[Fallout:Overlays:Type]"
 EndFunction
+
+
+; Properties
+;---------------------------------------------
+
+Group Properties
+	string Property EmptyState = "" AutoReadOnly
+
+	string Property StateName Hidden
+		string Function Get()
+			return self.GetState()
+		EndFunction
+	EndProperty
+EndGroup

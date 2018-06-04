@@ -1,4 +1,5 @@
 Scriptname Fallout:Overlays:Menu extends Fallout:Overlays:Type
+import Fallout:Overlays
 import Fallout:Overlays:Papyrus
 
 
@@ -14,8 +15,8 @@ EndEvent
 Event OnGameReload()
 	UI:MenuData data = new UI:MenuData
 	data.MenuFlags = FlagNone
-	data.ExtendedFlags = 0
-	If (UI.RegisterCustomMenu(Name, Path, Instance, data))
+	data.ExtendedFlags = FlagDoNotPreventGameSave
+	If (UI.RegisterCustomMenu(Name, Path, Root, data))
 		WriteLine(self, ToString()+" has registered as a custom menu.")
 	Else
 		WriteUnexpected(self, "OnGameReload", ToString()+" failed to register as a custom menu.")
@@ -27,27 +28,37 @@ EndEvent
 ;---------------------------------------------
 
 bool Function Open()
-	If (UI.IsMenuRegistered(Name))
-		return UI.OpenMenu(Name)
+	If (IsOpen)
+		WriteUnexpected(self, "Open", ToString()+" is already open.")
+		return true
 	Else
-		WriteUnexpected(self, "Open", ToString()+" is not registered.")
-		return false
+		If (IsRegistered)
+			return UI.OpenMenu(Name)
+		Else
+			WriteUnexpected(self, "Open", ToString()+" is not registered.")
+			return false
+		EndIf
 	EndIf
 EndFunction
 
 
 bool Function Close()
-	If (UI.IsMenuRegistered(Name))
-		return UI.CloseMenu(Name)
+	If (!IsOpen)
+		WriteUnexpected(self, "Close", ToString()+" is already closed.")
+		return true
 	Else
-		WriteUnexpected(self, "Close", ToString()+" is not registered.")
-		return false
+		If (IsRegistered)
+			return UI.CloseMenu(Name)
+		Else
+			WriteUnexpected(self, "Close", ToString()+" is not registered.")
+			return false
+		EndIf
 	EndIf
 EndFunction
 
 
 bool Function GetVisible()
-	If (UI.IsMenuOpen(Name))
+	If (IsOpen)
 		return UI.Get(Name, GetMember("Visible")) as bool
 	Else
 		WriteUnexpected(self, "GetVisible", ToString()+" is not open.")
@@ -57,7 +68,7 @@ EndFunction
 
 
 bool Function SetVisible(bool value)
-	If (UI.IsMenuOpen(Name))
+	If (IsOpen)
 		WriteLine(self, ToString()+" setting visible to "+value)
 		return UI.Set(Name, GetMember("Visible"), value)
 	Else
@@ -67,14 +78,31 @@ bool Function SetVisible(bool value)
 EndFunction
 
 
-Function SetOverlay(string filePath)
-	If (filePath)
-		var[] arguments = new var[1]
-		arguments[0] = filePath
-		UI.Invoke(Name, GetMember("SetOverlay"), arguments)
-		WriteLine(self, "SetOverlay:"+filePath)
+bool Function SetAlpha(float value)
+	If (IsOpen)
+		return UI.Set(Name, GetMember("Alpha"), value)
 	Else
-		WriteLine(self, "SetOverlay: Argument filePath cannot be none or empty.")
+		WriteUnexpected(self, "SetAlpha", ToString()+" is not open.")
+		return false
+	EndIf
+EndFunction
+
+
+bool Function SetURI(string value)
+	If (IsOpen)
+		If (value)
+			var[] arguments = new var[1]
+			arguments[0] = value
+			UI.Invoke(Name, GetMember("SetURI"), arguments)
+			WriteLine(self, "SetURI:"+value)
+			return true
+		Else
+			WriteUnexpectedValue(self, "SetURI", "value", "The value cannot be none or empty.")
+			return false
+		EndIf
+	Else
+		WriteUnexpected(self, "SetURI", ToString()+" is not open.")
+		return false
 	EndIf
 EndFunction
 
@@ -87,18 +115,18 @@ string Function GetMember(string member)
 	If (StringIsNoneOrEmpty(member))
 		WriteUnexpectedValue(self, "GetMember", "member", "Cannot operate on a none or empty member.")
 		return none
-	ElseIf (StringIsNoneOrEmpty(Instance))
+	ElseIf (StringIsNoneOrEmpty(Root))
 		WriteUnexpected(self, "GetMember", "Cannot operate on a none or empty instance path.")
 		return none
 	Else
-		return Instance+"."+member
+		return Root+"."+member
 	EndIf
 EndFunction
 
 
 string Function ToString()
 	{The string representation of this type.}
-	return "[Name:"+Name+", Path:"+Path+", Instance:"+Instance+"]"
+	return "[Name:"+Name+", Path:"+Path+", Root:"+Root+"]"
 EndFunction
 
 
@@ -122,15 +150,8 @@ Group Properties
 
 	string Property Root Hidden
 		string Function Get()
-			{The root display object of this menu.}
+			{The root instance path of this menu's display object.}
 			return "root1"
-		EndFunction
-	EndProperty
-
-	string Property Instance Hidden
-		string Function Get()
-			{The root instance path of this menu.}
-			return Root+".Menu"
 		EndFunction
 	EndProperty
 
@@ -140,13 +161,18 @@ Group Properties
 			return UI.IsMenuOpen(Name)
 		EndFunction
 	EndProperty
+
+	bool Property IsRegistered Hidden
+		bool Function Get()
+			{Returns true if this menu is registered.}
+			return UI.IsMenuRegistered(Name)
+		EndFunction
+	EndProperty
 EndGroup
 
 Group MenuFlags
 	int Property FlagNone = 0x0 AutoReadOnly
-	int Property FlagPauseGame = 0x01 AutoReadOnly
-	int Property FlagShowCursor = 0x04 AutoReadOnly
-	int Property FlagEnableMenuControl = 0x08 AutoReadOnly
+	int Property FlagDoNotPreventGameSave = 0x800 AutoReadOnly
 EndGroup
 
 Group ExtendedFlags
