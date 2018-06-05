@@ -5,25 +5,16 @@ import Fallout:Overlays:Papyrus
 
 Actor Player
 
-;/ Overlays /;
-string URI
-float AlphaLow = 0.50 const
-
-
 ;/ Equipped /;
+string URI
 string EquippedState = "Equipped" const
 
 ; Biped Slot
 int BipedEyes = 17 const
 
 ; Worn
-bool FirstPerson = true const
 bool ThirdPerson = false const
 
-; Menus
-string PipboyMenu = "PipboyMenu" const
-string ConsoleMenu = "Console" const
-string LoadingMenu = "LoadingMenu" const
 
 ; Events
 ;---------------------------------------------
@@ -73,13 +64,15 @@ State Equipped
 		WriteLine(self, "Equipped.OnBeginState")
 		RegisterForCameraState()
 		RegisterForMenuOpenCloseEvent(OverlayMenu.Name)
-		RegisterForMenuOpenCloseEvent(PipboyMenu)
-		RegisterForMenuOpenCloseEvent(ConsoleMenu)
-		RegisterForMenuOpenCloseEvent(LoadingMenu)
+		RegisterForGameReload(self)
 		OverlayMenu.Open()
 	EndEvent
 
 	;---------------------------------------------
+
+	Event OnGameReload()
+		OverlayMenu.Open()
+	EndEvent
 
 	Event OnMenuOpenCloseEvent(string asMenuName, bool abOpening)
 		WriteLine(self, "Equipped.OnMenuOpenCloseEvent(asMenuName="+asMenuName+", abOpening="+abOpening+")")
@@ -87,6 +80,8 @@ State Equipped
 			If (abOpening)
 				OverlayMenu.SetURI(URI)
 				OverlayMenu.SetVisible(IsFirstPerson)
+			Else
+				OverlayMenu.Open()
 			EndIf
 		EndIf
 	EndEvent
@@ -123,6 +118,7 @@ State Equipped
 		WriteLine(self, "Equipped.OnEndState")
 		UnregisterForCameraState()
 		UnregisterForAllMenuOpenCloseEvents()
+		UnregisterForGameReload(self)
 		OverlayMenu.Close()
 	EndEvent
 EndState
@@ -130,6 +126,7 @@ EndState
 
 Function EquipmentHandler()
 	{EMPTY}
+	WriteNotImplemented(self, "EquipmentHandler", "Only call this in the "+EquippedState+" state.")
 EndFunction
 
 
