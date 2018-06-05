@@ -13,27 +13,6 @@ package
 
 	public dynamic class OverlayLoader extends MovieClip implements F4SE.IExtensions
 	{
-		// TODO: I am not unmounting the images properly.
-		// TODO: Its attempting to mount swf files in its current state.
-		/*
-			# F4SE
-			- added Scaleform functions to load dds images
-				- MountImage(menuName, pathToMount, mountName)
-				- UnmountImage(menuName, pathToUnmount)
-				- Image is loaded through URLRequest("img://mountName")
-			- added Scaleform receiving function
-				- function onF4SEObjCreated(codeObject:Object):void
-				- This function is called on the menu root document as well as first-level children
-
-			# Scaling (Expired)
-			that looks like it's going to be file texture the size of your screen
-			which you will probably need multiple resolution versions so it doesnt look like ass at certain resolutions
-			you should be able to determine the real resolution in scaleform though
-			then you could pick which texture to mount based on that
-			yeah, stageWidth and stageHeight properties will be the actual resolution values
-			not the scaled to 720p value
-		*/
-
 		private var f4se:*;
 
 		// Files

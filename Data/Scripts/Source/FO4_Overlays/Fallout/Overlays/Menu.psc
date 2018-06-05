@@ -14,8 +14,8 @@ EndEvent
 
 Event OnGameReload()
 	UI:MenuData data = new UI:MenuData
-	data.MenuFlags = FlagNone
-	data.ExtendedFlags = FlagDoNotPreventGameSave
+	data.MenuFlags = FlagDoNotPreventGameSave
+	data.ExtendedFlags = FlagNone
 	If (UI.RegisterCustomMenu(Name, Path, Root, data))
 		WriteLine(self, ToString()+" has registered as a custom menu.")
 	Else
