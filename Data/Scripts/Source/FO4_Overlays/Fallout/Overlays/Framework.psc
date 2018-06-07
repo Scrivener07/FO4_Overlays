@@ -4,16 +4,12 @@ import Fallout:Overlays
 import Fallout:Overlays:Papyrus
 
 Actor Player
-
-;/ Equipped /;
 string URI
-string EquippedState = "Equipped" const
 
-; Biped Slot
 int BipedEyes = 17 const
-
-; Worn
 bool ThirdPerson = false const
+
+string EquippedState = "Equipped" const
 
 
 ; Events
@@ -41,7 +37,7 @@ EndEvent
 
 Event Actor.OnItemEquipped(Actor sender, Form akBaseObject, ObjectReference akReference)
 	string value = GetURI()
-	If (StringIsNoneOrEmpty(value) != true)
+	If (StringIsNoneOrEmpty(value) != true) ; do not allow a change to none/empty
 		If (TryChange(value))
 			ChangeState(self, EquippedState)
 		EndIf
@@ -94,16 +90,18 @@ State Equipped
 	;---------------------------------------------
 
 	Event Actor.OnItemEquipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
-		EquipmentHandler()
+		WriteLine(self, "Equipped.Actor.OnItemEquipped(akBaseObject="+akBaseObject+", akReference="+akReference+")")
+		Equipment()
 	EndEvent
 
 	Event Actor.OnItemUnequipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
-		EquipmentHandler()
+		WriteLine(self, "Equipped.Actor.OnItemEquipped(akBaseObject="+akBaseObject+", akReference="+akReference+")")
+		Equipment()
 	EndEvent
 
-	Function EquipmentHandler()
+	Function Equipment()
 		string value = GetURI()
-		If (TryChange(value))
+		If (TryChange(value)) ; ALLOW a change to none/empty
 			If (StringIsNoneOrEmpty(value))
 				ClearState(self)
 			Else
@@ -124,9 +122,9 @@ State Equipped
 EndState
 
 
-Function EquipmentHandler()
+Function Equipment()
 	{EMPTY}
-	WriteNotImplemented(self, "EquipmentHandler", "Only call this in the "+EquippedState+" state.")
+	WriteNotImplemented(self, "Equipment", "This should only be called in the "+EquippedState+" state.")
 EndFunction
 
 
@@ -146,9 +144,7 @@ EndFunction
 
 
 string Function GetURI()
-	string value = Player.GetWornItem(BipedEyes, ThirdPerson).ModelName
-	WriteLine(self, "GetURI::value:"+value)
-	return value
+	return Player.GetWornItem(BipedEyes, ThirdPerson).ModelName
 EndFunction
 
 
@@ -160,8 +156,6 @@ Group Overlay
 EndGroup
 
 Group Camera
-	int Property CameraFirstPerson = 0 AutoReadOnly
-
 	bool Property IsFirstPerson Hidden
 		bool Function Get()
 			return Player.GetAnimationVariableBool("IsFirstPerson")

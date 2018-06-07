@@ -24,7 +24,6 @@ package AS3
 
 		public static function TraceObject(object:Object, prefix:String = ""):void
 		{
-			trace("[Debug] (TraceObject)");
 			prefix == "" ? prefix = "---" : prefix += "---";
 			for (var element:* in object)
 			{
