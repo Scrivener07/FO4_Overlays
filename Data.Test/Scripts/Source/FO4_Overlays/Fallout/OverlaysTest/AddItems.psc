@@ -18,6 +18,12 @@ Event OnQuestInit()
 	Try(Fallout4, Armor_Gasmask)
 	Try(Fallout4, ClothesBlackRimGlasses)
 	Try(Fallout4, Armor_BoS_Science_Scribe_Helmet)
+
+	Try(ODST, Armor_H3_ODST_Helmet)
+	Try(ODST, Armor_H3_ODST_HelmetHaunted)
+	Try(ODST, Armor_ODST_Helmet)
+	Try(ODST, Armor_ODST_Recon_Helmet)
+
 	Try(CommonwealthSpartanRedux, Armor_CommonwealthSpartan_TechSuit)
 	Try(CommonwealthSpartanRedux, Armor_CommonwealthSpartan_Halo5_MarkIV_Left_Arm)
 	Try(CommonwealthSpartanRedux, Armor_CommonwealthSpartan_Halo5_MarkIV_Legs)
@@ -69,6 +75,7 @@ Event OnQuestInit()
 	Try(CommonwealthSpartanRedux, Armor_CommonwealthSpartan_Halo5_MarkIV_Helmet)
 	Try(CommonwealthSpartanRedux, Armor_CommonwealthSpartan_Halo5_Argus_Helmet)
 	Try(CommonwealthSpartanRedux, Armor_CommonwealthSpartan_Halo5_MarkVI_Helmet)
+
 	WriteLine(self, "Added items for debug testing.")
 EndEvent
 
@@ -96,6 +103,14 @@ Group Vanilla
 	int Property Armor_Gasmask = 0x001184C1 AutoReadOnly
 	int Property ClothesBlackRimGlasses = 0x00125891 AutoReadOnly
 	int Property Armor_BoS_Science_Scribe_Helmet = 0x000E4501 AutoReadOnly ;/ No Biped Eye Slot /;
+EndGroup
+
+Group ODST
+	string Property ODST = "ProjectHelljumper.esp" AutoReadOnly
+	int Property Armor_H3_ODST_Helmet = 0x00006ADB AutoReadOnly
+	int Property Armor_H3_ODST_HelmetHaunted = 0x00006AFF AutoReadOnly
+	int Property Armor_ODST_Helmet = 0x00001735 AutoReadOnly
+	int Property Armor_ODST_Recon_Helmet = 0x0001729C AutoReadOnly
 EndGroup
 
 Group BrandonPotter
