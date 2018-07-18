@@ -38,7 +38,7 @@ package F4SE
 			}
 			else
 			{
-				AS3.Debug.WriteLine("[F4SE]", "FileSystemInfo", "FromObject", "The object cannot be null.");
+				AS3.Debug.WriteLine("[F4SE]", "[FileSystemInfo]", "(FromObject)", "The object cannot be null.");
 				return null;
 			}
 		}

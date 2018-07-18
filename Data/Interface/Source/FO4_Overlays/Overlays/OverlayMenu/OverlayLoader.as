@@ -28,48 +28,35 @@ package
 		private static const DefaultHeight:Number = 720;
 
 		// Loader
-
 		private var ContentLoader:Loader;
 		private function get Info() : LoaderInfo { return ContentLoader.contentLoaderInfo; }
 		private function get Url() : String { return ContentLoader.contentLoaderInfo.url; }
 		private function get Content() : DisplayObject { return ContentLoader.contentLoaderInfo.content; }
 
 
-		// Events
+		// Initialize
 		//---------------------------------------------
 
 		public function OverlayLoader()
 		{
 			super();
-			trace("\n");
-			trace("\n");
-			trace("\n");
-			trace("\n");
-			trace("\n");
-			trace("\n");
-			trace("\n");
-			trace("\n");
-			trace("\n");
-			trace("\n");
-			trace("\n");
-			trace("\n");
-			trace("\n");
-			trace("\n");
 			this.visible = false;
 			ContentLoader = new Loader();
 			Info.addEventListener(Event.COMPLETE, this.OnLoadComplete);
 			Info.addEventListener(IOErrorEvent.IO_ERROR, this.OnLoadError);
-			Debug.WriteLine("OverlayLoader", "(ctor)", "Constructor Code");
+			Debug.WriteLine("[OverlayLoader]", "(ctor)", "Constructor Code");
 		}
 
+
+		// Events
+		//---------------------------------------------
 
 		public function onF4SEObjCreated(codeObject:*):void
 		{ // @F4SE
 			if(codeObject != null)
 			{
 				f4se = codeObject;
-				Debug.WriteLine("[OverlayLoader]", "(onF4SEObjCreated)", "Received F4SE code object.");
-				Debug.TraceObject(f4se);
+				Debug.WriteLine("[OverlayLoader]", "(onF4SEObjCreated)", "Received F4SE code object.", "Version:"+F4SE.Extensions.GetVersion(f4se).toString());
 			}
 			else
 			{
@@ -78,7 +65,38 @@ package
 		}
 
 
-		// Methods
+		private function OnLoadComplete(e:Event):void
+		{
+			addChild(Content);
+			Utility.ScaleToHeight(Content, DefaultHeight); // Note: The default height of 720 works for dds files.
+			// Utility.ScaleToHeight(this, Resolution); // Note: The stage height works for swf files.
+
+			this.visible = true;
+			Debug.WriteLine("[OverlayLoader]", "(OnLoadComplete)", e.toString()+", "+toString());
+		}
+
+
+		private function OnLoadError(e:IOErrorEvent):void
+		{
+			Clear();
+			var extension:String = Path.GetFileExtension(e.text)
+			if(extension == SWF)
+			{
+				Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", e.toString()+", No SWF file was found, trying DDS files. "+toString());
+				Load(LastFile, DDS);
+			}
+			else if (extension == DDS)
+			{
+				Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", e.toString()+", No suitable files were found. "+toString());
+			}
+			else
+			{
+				Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", e.toString()+", The error was unhandled. "+toString());
+			}
+		}
+
+
+		// Functions
 		//---------------------------------------------
 
 		public function TryLoad(filepath:String):void
@@ -91,12 +109,9 @@ package
 		private function Load(filepath:String, extension:String):Boolean
 		{
 			Clear();
-
 			var value = Path.ConvertFileExtension(filepath, extension);
 			Debug.WriteLine("[OverlayLoader]", "(ConvertFileExtension)", "Converting file path '"+filepath+"' to '"+extension+"' extension as '"+value+"'.");
 			filepath = value;
-
-
 			var urlRequest:URLRequest;
 
 			if (extension == SWF)
@@ -136,40 +151,6 @@ package
 			return F4SE.Extensions.GetDirectoryListing(f4se, folder, "*.dds", true).length > 0;
 		}
 
-
-		private function OnLoadComplete(e:Event):void
-		{
-			addChild(Content);
-			Utility.ScaleToHeight(Content, DefaultHeight); // Note: The default height of 720 works for dds files.
-			// Utility.ScaleToHeight(this, Resolution); // Note: The stage height works for swf files.
-
-			this.visible = true;
-			Debug.WriteLine("[OverlayLoader]", "(OnLoadComplete)", e.toString()+"\n"+toString());
-		}
-
-
-		private function OnLoadError(e:IOErrorEvent):void
-		{
-			Clear();
-			var extension:String = Path.GetFileExtension(e.text)
-			if(extension == SWF)
-			{
-				Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", e.toString()+" No SWF file was found, trying DDS files.\n"+toString());
-				Load(LastFile, DDS);
-			}
-			else if (extension == DDS)
-			{
-				Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", e.toString()+" No suitable files were found.\n"+toString());
-			}
-			else
-			{
-				Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", e.toString()+" The error was unhandled.\n"+toString());
-			}
-		}
-
-
-		// Methods
-		//---------------------------------------------
 
 		private function Clear():void
 		{
@@ -221,16 +202,14 @@ package
 		}
 
 
-		// Functions
-		//---------------------------------------------
-
 		public override function toString():String
 		{
-			var sResolution = "Resolution: "+stage.width+"x"+stage.height+" ("+this.x+"x"+this.y+")";
+			var sResolution = "Resolution: "+stage.width+"x"+stage.height;
+			var sPosition = " Position: "+this.x+"x"+this.y;
 			var sURI = "Uri: '"+Uri+"'";
 			var sLastFile = "LastFile: '"+LastFile+"'";
 			var sUrl = "Url: '"+Url+"'";
-			return sResolution+"\n"+sURI+"\n"+sLastFile+"\n"+sUrl;
+			return sResolution+", "+sPosition+", "+sURI+", "+sLastFile+", "+sUrl;
 		}
 
 

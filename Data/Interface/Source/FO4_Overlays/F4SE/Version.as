@@ -22,15 +22,15 @@ package F4SE
 			if (object != null)
 			{
 				var value:Version = new Version();
-				value.major = object.major;
-				value.minor = object.minor;
-				value.beta = object.beta;
-				value.releaseIdx = object.releaseIdx;
+				value.major = Number(object.major);
+				value.minor = Number(object.minor);
+				value.beta = Number(object.beta);
+				value.releaseIdx = Number(object.releaseIdx);
 				return value;
 			}
 			else
 			{
-				AS3.Debug.WriteLine("[F4SE]", "Version", "FromObject", "The object cannot be null.");
+				AS3.Debug.WriteLine("[F4SE]", "[Version]", "(FromObject)", "The object cannot be null.");
 				return null;
 			}
 		}

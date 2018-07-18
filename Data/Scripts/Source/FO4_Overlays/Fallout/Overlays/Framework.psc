@@ -60,6 +60,7 @@ Function Equipment()
 	EndIf
 EndFunction
 
+
 string Function GetURI()
 	int slot = GetSlot()
 	If (slot > Invalid)

@@ -23,21 +23,7 @@
 
 		public function OverlayMenu()
 		{
-			Debug.WriteLine("OverlayMenu", "ctor", "Constructor Code", this.loaderInfo.url);
-			Overlay.Info.addEventListener(Event.COMPLETE, this.OnLoadComplete);
-			Overlay.Info.addEventListener(IOErrorEvent.IO_ERROR, this.OnLoadError);
-		}
-
-
-		private function OnLoadComplete(e:Event):void
-		{
-			Debug.TraceDisplayList(this);
-		}
-
-
-		private function OnLoadError(e:IOErrorEvent):void
-		{
-			Debug.TraceDisplayList(this);
+			Debug.WriteLine("[OverlayMenu]", "(ctor)", "Constructor Code", this.loaderInfo.url);
 		}
 
 
@@ -46,7 +32,7 @@
 
 		public function SetURI(uri:String):void
 		{
-			Debug.WriteLine("OverlayMenu", "Request", "Setting the uri to '"+uri+"'");
+			Debug.WriteLine("[OverlayMenu]", "(SetURI)", "Setting the uri to '"+uri+"'");
 			Overlay.TryLoad(uri);
 		}
 

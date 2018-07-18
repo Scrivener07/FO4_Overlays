@@ -5,6 +5,28 @@ package F4SE
 	public class Extensions
 	{
 
+		public static function GetVersion(f4se:*):Version
+		{
+			if (f4se != null)
+			{
+				if (f4se.version != null)
+				{
+					return Version.FromObject(f4se.version);
+				}
+				else
+				{
+					Debug.WriteLine("[F4SE]", "[Extensions]", "(GetVersion)", "f4se.version", "The 'f4se.version' object cannot be null.");
+					return new Version();
+				}
+			}
+			else
+			{
+				Debug.WriteLine("[F4SE]", "[Extensions]", "(GetVersion)", "f4se", "The 'f4se' object cannot be null.");
+				return new Version();
+			}
+		}
+
+
 		public static function GetDirectoryListing(f4se:*, path:String, match:String, recursive:Boolean=false):Vector.<FileSystemInfo>
 		{
 			if (f4se != null)
@@ -16,7 +38,7 @@ package F4SE
 				}
 				catch (error:Error)
 				{
-					Debug.WriteLine("[F4SE]", "Extensions", "GetDirectoryListing", "ERROR:", error.toString());
+					Debug.WriteLine("[F4SE]", "[Extensions]", "(GetDirectoryListing)", "ERROR:", error.toString());
 				}
 				if(array.length > 0)
 				{
@@ -29,13 +51,13 @@ package F4SE
 				}
 				else
 				{
-					Debug.WriteLine("[F4SE]", "Extensions", "GetDirectoryListing", "No files or folders were found.", "path:'"+path+"'", "match:'"+match+"'", "recursive:'"+recursive+"'");
+					Debug.WriteLine("[F4SE]", "[Extensions]", "(GetDirectoryListing)", "No files or folders were found.", "path:'"+path+"'", "match:'"+match+"'", "recursive:'"+recursive+"'");
 					return null;
 				}
 			}
 			else
 			{
-				Debug.WriteLine("[F4SE]", "Extensions", "GetDirectoryListing", "The f4se object cannot be null.");
+				Debug.WriteLine("[F4SE]", "[Extensions]", "(GetDirectoryListing)", "The f4se object cannot be null.");
 				return null;
 			}
 		}
@@ -51,12 +73,12 @@ package F4SE
 				}
 				catch (error:Error)
 				{
-					Debug.WriteLine("[F4SE]", "Extensions", "MountImage", "ERROR:", error.toString());
+					Debug.WriteLine("[F4SE]", "[Extensions]", "(MountImage)", "ERROR:", error.toString());
 				}
 			}
 			else
 			{
-				Debug.WriteLine("[F4SE]", "Extensions", "MountImage", "The f4se object cannot be null.");
+				Debug.WriteLine("[F4SE]", "[Extensions]", "(MountImage)", "The f4se object cannot be null.");
 			}
 		}
 
@@ -71,36 +93,12 @@ package F4SE
 				}
 				catch (error:Error)
 				{
-					Debug.WriteLine("[F4SE]", "Extensions", "UnmountImage", "ERROR:", error.toString());
+					Debug.WriteLine("[F4SE]", "[Extensions]", "(UnmountImage)", "ERROR:", error.toString());
 				}
 			}
 			else
 			{
-				Debug.WriteLine("[F4SE]", "Extensions", "UnmountImage", "The f4se object cannot be null.");
-			}
-		}
-
-
-		public static function GetVersion(f4se:*):Version
-		{
-			if (f4se != null)
-			{
-				if (f4se.version != null)
-				{
-					var value:Version = Version.FromObject(f4se.version);
-					Debug.WriteLine("[F4SE]", "Extensions", "GetVersion", "value:", value.toString());
-					return value;
-				}
-				else
-				{
-					Debug.WriteLine("[F4SE]", "Extensions", "GetVersion", "f4se.version", "The 'f4se.version' object cannot be null.");
-					return new Version();
-				}
-			}
-			else
-			{
-				Debug.WriteLine("[F4SE]", "Extensions", "GetVersion", "f4se", "The 'f4se' object cannot be null.");
-				return new Version();
+				Debug.WriteLine("[F4SE]", "[Extensions]", "(UnmountImage)", "The f4se object cannot be null.");
 			}
 		}
 
@@ -113,7 +111,7 @@ package F4SE
 		// 	}
 		// 	else
 		// 	{
-		// 		Debug.WriteLine("[F4SE]", "Extensions", "GetMembers", "The f4se object cannot be null.");
+		// 		Debug.WriteLine("[F4SE]", "[Extensions]", "GetMembers", "The f4se object cannot be null.");
 		// 	}
 		// }
 
@@ -126,7 +124,7 @@ package F4SE
 		// 	}
 		// 	else
 		// 	{
-		// 		Debug.WriteLine("[F4SE]", "Extensions", "CallFunctionNoWait", "The f4se object cannot be null.");
+		// 		Debug.WriteLine("[F4SE]", "[Extensions]", "CallFunctionNoWait", "The f4se object cannot be null.");
 		// 	}
 		// }
 
@@ -139,7 +137,7 @@ package F4SE
 		// 	}
 		// 	else
 		// 	{
-		// 		Debug.WriteLine("[F4SE]", "Extensions", "AllowTextInput", "The f4se object cannot be null.");
+		// 		Debug.WriteLine("[F4SE]", "[Extensions]", "AllowTextInput", "The f4se object cannot be null.");
 		// 	}
 		// }
 
@@ -152,7 +150,7 @@ package F4SE
 		// 	}
 		// 	else
 		// 	{
-		// 		Debug.WriteLine("[F4SE]", "Extensions", "SendExternalEvent", "The f4se object cannot be null.");
+		// 		Debug.WriteLine("[F4SE]", "[Extensions]", "SendExternalEvent", "The f4se object cannot be null.");
 		// 	}
 		// }
 
@@ -165,7 +163,7 @@ package F4SE
 		// 	}
 		// 	else
 		// 	{
-		// 		Debug.WriteLine("[F4SE]", "Extensions", "GetPlugins", "The f4se object cannot be null.");
+		// 		Debug.WriteLine("[F4SE]", "[Extensions]", "GetPlugins", "The f4se object cannot be null.");
 		// 	}
 		// }
 

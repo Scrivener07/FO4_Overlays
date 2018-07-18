@@ -32,14 +32,14 @@ package AS3
 
 		public static function FitToScreen(object:DisplayObject) : void
 		{
-			AS3.Debug.WriteLine("AS3", "FitToScreen", "Stage.height="+object.stage.height);
+			AS3.Debug.WriteLine("[AS3]", "(FitToScreen)", "Stage.height="+object.stage.height);
 			ScaleToHeight(object, object.stage.height);
 		}
 
 
 		public static function ScaleToHeight(object:DisplayObject, height:Number) : void
 		{
-			AS3.Debug.WriteLine("AS3", "ScaleToHeight", "object="+object+", height="+height);
+			AS3.Debug.WriteLine("[AS3]", "(ScaleToHeight)", "object="+object+", height="+height);
 			object.height = height;
 			object.scaleX = object.scaleY;
 			CenterOnStage(object);
@@ -50,7 +50,7 @@ package AS3
 		{
 			object.x = (object.stage.width - object.width) / 2;
 			object.y = (object.stage.height - object.height) / 2;
-			AS3.Debug.WriteLine("AS3", "CenterOnStage", "object.x="+object.x+", object.y="+object.y);
+			AS3.Debug.WriteLine("[AS3]", "(CenterOnStage)", "object.x="+object.x+", object.y="+object.y);
 		}
 
 
