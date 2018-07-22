@@ -39,9 +39,9 @@ EndEvent
 
 
 Event Actor.OnItemEquipped(Actor sender, Form akBaseObject, ObjectReference akReference)
-	If (ItemEquipped(akBaseObject))
-		Equipment()
+	If (ItemFilter(akBaseObject))
 		WriteLine(self, "Actor.OnItemEquipped", "akBaseObject="+akBaseObject)
+		Equipment()
 	EndIf
 EndEvent
 
@@ -54,7 +54,7 @@ EndEvent
 ; Methods
 ;---------------------------------------------
 
-bool Function ItemEquipped(Form item)
+bool Function ItemFilter(Form item)
 	Armor armo = item as Armor
 	return armo && HasSlotMask(armo, kSlotMask47)
 EndFunction
@@ -75,41 +75,37 @@ EndFunction
 
 
 string Function GetURI()
-	int slot = GetSlot()
-	If (slot > Invalid)
-		string value
-		ObjectMod[] mods = Player.GetWornItemMods(slot)
-		If (mods)
-			int index = 0
-			While (index < mods.Length)
-				value = GetLooseMod(mods[index])
-				If (!StringIsNoneOrEmpty(value))
-					WriteLine(self, "GetURI", "LooseMod:'"+value+"'")
-					return value
-				EndIf
-				index += 1
-			EndWhile
-		EndIf
-		;---------------------------------------------
-		value = GetDefault(slot)
-		WriteLine(self, "GetURI", "Default:'"+value+"'")
-		return value
-	Else
-		return ""
-	EndIf
-EndFunction
-
-
-int Function GetSlot()
 	int slot = 0
 	While (slot <= BipedEyes)
-		Form item = Player.GetWornItem(slot, ThirdPerson).Item
-		If (ItemEquipped(item))
-			return slot
+		Actor:WornItem worn = Player.GetWornItem(slot, ThirdPerson)
+		If (ItemFilter(worn.Item))
+			string value
+			ObjectMod[] mods = Player.GetWornItemMods(slot)
+			If (mods)
+				int index = 0
+				While (index < mods.Length)
+					value = GetLooseMod(mods[index])
+					If (!StringIsNoneOrEmpty(value))
+						WriteLine(self, "GetURI", "LooseMod:'"+value+"'")
+						return value
+					EndIf
+					index += 1
+				EndWhile
+			EndIf
+			;---------------------------------------------
+			value = GetWorldModel(worn)
+			If (!StringIsNoneOrEmpty(value))
+				WriteLine(self, "GetURI", "WorldModel:'"+value+"'")
+				return value
+			Else
+				value = GetModel(worn)
+				WriteLine(self, "GetURI", "Model:'"+value+"'")
+				return value
+			EndIf
 		EndIf
 		slot += 1
 	EndWhile
-	return Invalid
+	return ""
 EndFunction
 
 
@@ -124,17 +120,21 @@ string Function GetLooseMod(ObjectMod omod)
 EndFunction
 
 
-string Function GetDefault(int slot)
+string Function GetWorldModel(Actor:WornItem worn)
+	{Derived from the armor world model path.}
+	Armor armo = worn.Item as Armor
+	If (armo && armo.HasWorldModel())
+		return armo.GetWorldModelPath()
+	Else
+		return ""
+	EndIf
+EndFunction
+
+
+string Function GetModel(Actor:WornItem worn)
 	{Derived from the armor model name.}
-	return Player.GetWornItem(slot, ThirdPerson).ModelName
+	return worn.ModelName
 EndFunction
-
-
-
-string Function GetWorldModel(int slot)
-	return Player.GetWornItem(slot, ThirdPerson).Item.GetWorldModelPath()
-EndFunction
-
 
 
 bool Function TryChange(string value)
@@ -188,16 +188,16 @@ State Equipped
 	;---------------------------------------------
 
 	Event Actor.OnItemEquipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
-		If (ItemEquipped(akBaseObject))
-			Equipment()
+		If (ItemFilter(akBaseObject))
 			WriteLine(self, "Equipped.Actor.OnItemEquipped", "akBaseObject="+akBaseObject)
+			Equipment()
 		EndIf
 	EndEvent
 
 	Event Actor.OnItemUnequipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
-		If (ItemEquipped(akBaseObject))
+		If (ItemFilter(akBaseObject))
+			WriteLine(self, "Equipped.Actor.OnItemUnequipped", "akBaseObject="+akBaseObject)
 			Equipment()
-			WriteLine(self, "Equipped.Actor.OnItemEquipped", "akBaseObject="+akBaseObject)
 		EndIf
 	EndEvent
 
