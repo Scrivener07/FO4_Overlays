@@ -1,4 +1,4 @@
-Scriptname Fallout:OverlaysTest:AddItems extends Fallout:Overlays:Type DebugOnly
+Scriptname Fallout:OverlaysTest:Setup extends Fallout:Overlays:Type DebugOnly
 import Fallout:Overlays:Papyrus
 
 Actor Player
