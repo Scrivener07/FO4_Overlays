@@ -16,8 +16,15 @@ Event OnQuestInit()
 	Try(Fallout4, Armor_Synth_Helmet_Closed)
 	Try(Fallout4, Armor_Raider_GreenHoodGasmask)
 	Try(Fallout4, Armor_Gasmask)
-	Try(Fallout4, ClothesBlackRimGlasses)
 	Try(Fallout4, Armor_BoS_Science_Scribe_Helmet)
+
+	Try(Fallout4, ClothesDeaconSunGlasses)
+	Try(Fallout4, ClothesSunGlasses)
+	Try(Fallout4, ClothesPoliceGlasses)
+	Try(Fallout4, InstM02LiamsGlasses)
+	Try(Fallout4, ClothesFancyGlasses)
+	Try(Fallout4, ClothesEyeGlasses)
+	Try(Fallout4, ClothesBlackRimGlasses)
 
 	Try(ODST, Armor_H3_ODST_Helmet)
 	Try(ODST, Armor_H3_ODST_HelmetHaunted)
@@ -101,8 +108,15 @@ Group Vanilla
 	int Property Armor_Synth_Helmet_Closed = 0x0018796A AutoReadOnly
 	int Property Armor_Raider_GreenHoodGasmask = 0x0007239E AutoReadOnly
 	int Property Armor_Gasmask = 0x001184C1 AutoReadOnly
-	int Property ClothesBlackRimGlasses = 0x00125891 AutoReadOnly
 	int Property Armor_BoS_Science_Scribe_Helmet = 0x000E4501 AutoReadOnly ;/ No Biped Eye Slot /;
+
+	int Property ClothesDeaconSunGlasses = 0x0004A520 AutoReadOnly
+	int Property ClothesSunGlasses = 0x000E628A AutoReadOnly
+	int Property ClothesPoliceGlasses = 0x001738AA AutoReadOnly
+	int Property InstM02LiamsGlasses = 0x001B5B26 AutoReadOnly
+	int Property ClothesFancyGlasses = 0x000FD9AA AutoReadOnly
+	int Property ClothesEyeGlasses = 0x001C4BE8 AutoReadOnly
+	int Property ClothesBlackRimGlasses = 0x00125891 AutoReadOnly
 EndGroup
 
 Group ODST
@@ -114,7 +128,7 @@ Group ODST
 EndGroup
 
 Group BrandonPotter
-	string Property CommonwealthSpartanRedux = "Commonwealth_Spartan_Redux.esp" AutoReadOnly
+	string Property CommonwealthSpartanRedux = "Commonwealth_Spartan_Redux.esm" AutoReadOnly
 	int Property Armor_CommonwealthSpartan_TechSuit = 0x0003BC8D AutoReadOnly
 	int Property Armor_CommonwealthSpartan_Halo5_MarkIV_Left_Arm = 0x0007EB2D AutoReadOnly
 	int Property Armor_CommonwealthSpartan_Halo5_MarkIV_Legs = 0x0007EB2E AutoReadOnly

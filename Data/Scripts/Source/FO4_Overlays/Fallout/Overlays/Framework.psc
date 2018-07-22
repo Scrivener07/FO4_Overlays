@@ -39,7 +39,10 @@ EndEvent
 
 
 Event Actor.OnItemEquipped(Actor sender, Form akBaseObject, ObjectReference akReference)
-	Equipment()
+	If (ItemEquipped(akBaseObject))
+		Equipment()
+		WriteLine(self, "Actor.OnItemEquipped", "akBaseObject="+akBaseObject)
+	EndIf
 EndEvent
 
 
@@ -48,15 +51,25 @@ Event Actor.OnItemUnequipped(Actor akSender, Form akBaseObject, ObjectReference 
 EndEvent
 
 
-; Functions
+; Methods
 ;---------------------------------------------
 
-Function Equipment()
+bool Function ItemEquipped(Form item)
+	Armor armo = item as Armor
+	return armo && HasSlotMask(armo, kSlotMask47)
+EndFunction
+
+
+bool Function Equipment()
 	string value = GetURI()
 	If (StringIsNoneOrEmpty(value) != true) ; do not allow a change to none/empty
 		If (TryChange(value))
-			ChangeState(self, EquippedState)
+			return ChangeState(self, EquippedState)
+		Else
+			return false
 		EndIf
+	Else
+		return false
 	EndIf
 EndFunction
 
@@ -74,13 +87,6 @@ string Function GetURI()
 					WriteLine(self, "GetURI", "LooseMod:'"+value+"'")
 					return value
 				EndIf
-
-				; value = GetObjectMod(mods[index])
-				; If (!StringIsNoneOrEmpty(value))
-				; 	WriteLine(self, "GetURI", "ObjectMod:'"+value+"'")
-				; 	return value
-				; EndIf
-
 				index += 1
 			EndWhile
 		EndIf
@@ -97,20 +103,14 @@ EndFunction
 int Function GetSlot()
 	int slot = 0
 	While (slot <= BipedEyes)
-		Armor armo = Player.GetWornItem(slot, ThirdPerson).Item as Armor
-		If (armo && HasSlotMask(armo, kSlotMask47))
+		Form item = Player.GetWornItem(slot, ThirdPerson).Item
+		If (ItemEquipped(item))
 			return slot
 		EndIf
 		slot += 1
 	EndWhile
 	return Invalid
 EndFunction
-
-
-bool Function HasSlotMask(Armor armo, int value)
-	return Math.LogicalAnd(armo.GetSlotMask(), value) == value
-EndFunction
-
 
 
 string Function GetLooseMod(ObjectMod omod)
@@ -124,33 +124,17 @@ string Function GetLooseMod(ObjectMod omod)
 EndFunction
 
 
-; string Function GetObjectMod(ObjectMod omod)
-; 	{Derived from the object mod model path.}
-; 	ObjectMod:PropertyModifier[] properties = omod.GetPropertyModifiers()
-; 	If (properties)
-; 		int index = properties.FindStruct("object", ArmorBodyPartEyes)
-; 		If (index > Invalid)
-; 			ObjectMod:PropertyModifier modifier = properties[index]
-; 			bool bTarget = (modifier.Target == omod.Armor_Target_pkKeywords)
-; 			bool bOperator = (modifier.Operator == omod.Modifier_Operator_Add)
-; 			If (bTarget && bOperator)
-; 				return omod.GetWorldModelPath()
-; 			Else
-; 				return ""
-; 			EndIf
-; 		Else
-; 			return ""
-; 		EndIf
-; 	Else
-; 		return ""
-; 	EndIf
-; EndFunction
-
-
 string Function GetDefault(int slot)
 	{Derived from the armor model name.}
 	return Player.GetWornItem(slot, ThirdPerson).ModelName
 EndFunction
+
+
+
+string Function GetWorldModel(int slot)
+	return Player.GetWornItem(slot, ThirdPerson).Item.GetWorldModelPath()
+EndFunction
+
 
 
 bool Function TryChange(string value)
@@ -204,23 +188,29 @@ State Equipped
 	;---------------------------------------------
 
 	Event Actor.OnItemEquipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
-		WriteLine(self, "Equipped.Actor.OnItemEquipped(akBaseObject="+akBaseObject+", akReference="+akReference+")")
-		Equipment()
+		If (ItemEquipped(akBaseObject))
+			Equipment()
+			WriteLine(self, "Equipped.Actor.OnItemEquipped", "akBaseObject="+akBaseObject)
+		EndIf
 	EndEvent
 
 	Event Actor.OnItemUnequipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
-		WriteLine(self, "Equipped.Actor.OnItemEquipped(akBaseObject="+akBaseObject+", akReference="+akReference+")")
-		Equipment()
+		If (ItemEquipped(akBaseObject))
+			Equipment()
+			WriteLine(self, "Equipped.Actor.OnItemEquipped", "akBaseObject="+akBaseObject)
+		EndIf
 	EndEvent
 
-	Function Equipment()
+	bool Function Equipment()
 		string value = GetURI()
 		If (TryChange(value)) ; ALLOW a change to none/empty
 			If (StringIsNoneOrEmpty(value))
-				ClearState(self)
+				return ClearState(self)
 			Else
-				OverlayMenu.SetURI(URI)
+				return OverlayMenu.SetURI(URI)
 			EndIf
+		Else
+			return false
 		EndIf
 	EndFunction
 
@@ -234,6 +224,14 @@ State Equipped
 		OverlayMenu.Close()
 	EndEvent
 EndState
+
+
+; Functions
+;---------------------------------------------
+
+bool Function HasSlotMask(Armor armo, int value)
+	return Math.LogicalAnd(armo.GetSlotMask(), value) == value
+EndFunction
 
 
 ; Properties
@@ -254,11 +252,3 @@ Group Camera
 		EndFunction
 	EndProperty
 EndGroup
-
-; Group Equipped
-; 	bool Property HasEquipped Hidden
-; 		bool Function Get()
-; 			return StringIsNoneOrEmpty(URI) != true
-; 		EndFunction
-; 	EndProperty
-; EndGroup
