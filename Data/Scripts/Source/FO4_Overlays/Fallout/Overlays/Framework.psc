@@ -173,6 +173,7 @@ State Equipped
 		If (asMenuName == OverlayMenu.Name)
 			If (abOpening)
 				OverlayMenu.SetURI(URI)
+				OverlayMenu.SetAlpha(Fallout_Overlays_Alpha.GetValue())
 				OverlayMenu.SetVisible(IsFirstPerson)
 			Else
 				OverlayMenu.Open()
@@ -239,6 +240,7 @@ EndFunction
 
 Group Properties
 	Keyword Property ArmorBodyPartEyes Auto Const Mandatory
+	GlobalVariable Property Fallout_Overlays_Alpha Auto Const Mandatory
 EndGroup
 
 Group Overlay

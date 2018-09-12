@@ -1,0 +1,29 @@
+{
+	"modName": "Overlays",
+	"displayName": "Overlays Framework",
+	"minMcmVersion": 3,
+	"content":
+	[
+		{
+			"text": "Opacity",
+			"type": "slider",
+			"help": "Applies transparency to overlays. Range: 0-1, Step: 0.01.",
+			"valueOptions":
+			{
+				"sourceType": "GlobalValue",
+				"form": "Overlays.esp|5B95",
+				"min": 0,
+				"max": 1,
+				"step": 0.01
+			},
+			"action":
+			{
+				"type": "CallFunction",
+				"form": "Overlays.esp|F99",
+				"function": "SetAlpha",
+				"params": ["{value}"],
+				"scriptName": "Fallout:Overlays:Menu"
+			}
+		}
+	]
+}
