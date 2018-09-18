@@ -83,6 +83,8 @@ Event OnQuestInit()
 	Try(CommonwealthSpartanRedux, Armor_CommonwealthSpartan_Halo5_Argus_Helmet)
 	Try(CommonwealthSpartanRedux, Armor_CommonwealthSpartan_Halo5_MarkVI_Helmet)
 
+	Try(Scouter, Armor_Scouter)
+
 	WriteLine(self, "Added items for debug testing.")
 EndEvent
 
@@ -180,4 +182,9 @@ Group BrandonPotter
 	int Property Armor_CommonwealthSpartan_Halo5_MarkIV_Helmet = 0x0007EB2C AutoReadOnly
 	int Property Armor_CommonwealthSpartan_Halo5_Argus_Helmet = 0x0008DF46 AutoReadOnly
 	int Property Armor_CommonwealthSpartan_Halo5_MarkVI_Helmet = 0x00092AED AutoReadOnly
+EndGroup
+
+Group Scouter
+	string Property Scouter = "Scouter_V1.1_by_Ruddy88.esp" AutoReadOnly
+	int Property Armor_Scouter = 0x00000800 AutoReadOnly
 EndGroup

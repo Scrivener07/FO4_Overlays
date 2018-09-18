@@ -31,7 +31,7 @@ package
 		private var ContentLoader:Loader;
 		private function get Info() : LoaderInfo { return ContentLoader.contentLoaderInfo; }
 		private function get Url() : String { return ContentLoader.contentLoaderInfo.url; }
-		private function get Content() : DisplayObject { return ContentLoader.contentLoaderInfo.content; }
+		 private function get Content() : DisplayObject { return ContentLoader.contentLoaderInfo.content; }
 
 
 		// Initialize
@@ -56,7 +56,7 @@ package
 			if(codeObject != null)
 			{
 				f4se = codeObject;
-				Debug.WriteLine("[OverlayLoader]", "(onF4SEObjCreated)", "Received F4SE code object.", "Version:"+F4SE.Extensions.GetVersion(f4se).toString());
+				Debug.WriteLine("[OverlayLoader]", "(onF4SEObjCreated)", "Received F4SE code object.");
 			}
 			else
 			{
@@ -67,11 +67,11 @@ package
 
 		private function OnLoadComplete(e:Event):void
 		{
-			addChild(Content);
-			Utility.ScaleToHeight(Content, DefaultHeight); // Note: The default height of 720 works for dds files.
-			// Utility.ScaleToHeight(this, Resolution); // Note: The stage height works for swf files.
-
+			// Note: Scale to default height of 720 works for dds files. The stage height works for swf files.
+			this.addChild(Content);
+			Utility.ScaleToHeight(Content, DefaultHeight);
 			this.visible = true;
+			Debug.TraceDisplayList(MovieClip(stage.getChildAt(0)));
 			Debug.WriteLine("[OverlayLoader]", "(OnLoadComplete)", e.toString()+", "+toString());
 		}
 
@@ -190,7 +190,7 @@ package
 			{
 				this.visible = false;
 				removeChild(Content);
-				Content.loaderInfo.loader.unload();
+				ContentLoader.unload();
 				Debug.WriteLine("[OverlayLoader]", "(Unload)", "Unloaded content from loader.");
 				return true;
 			}
