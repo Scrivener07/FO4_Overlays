@@ -25,7 +25,7 @@ EndFunction
 
 bool Function WriteMessage(string prefix, string title, string text = "") Global DebugOnly
 	string value
-	If !(StringIsNoneOrEmpty(text))
+	If (text)
 		value = title+"\n"+text
 	EndIf
 	Debug.MessageBox(value)
@@ -38,7 +38,7 @@ EndFunction
 ; Writes script messages as lines in a log file.
 
 bool Function WriteLine(var script, string member, string text = "") Global DebugOnly
-	If (StringIsNoneOrEmpty(text))
+	If !(text)
 		return Write(script, member)
 	Else
 		return Write(script+"["+member+"]", text)
@@ -155,7 +155,7 @@ bool Function BeginState(ScriptObject this, string statename = "Busy") Global
 			WriteUnexpected(this, "BeginState", "Cannot start the '"+statename+"' state while '"+this.GetState()+"' state is running.")
 			return false
 		Else
-			If !(StringIsNoneOrEmpty(statename))
+			If (statename)
 				If (ChangeState(this, statename))
 					return true
 				Else
@@ -215,13 +215,4 @@ bool Function ChangeState(ScriptObject this, string statename) Global
 		WriteUnexpectedValue("Fallout:Overlays:Papyrus", "ChangeState", "this", "The script cannot be none.")
 		return false
 	EndIf
-EndFunction
-
-
-; String
-;---------------------------------------------
-
-bool Function StringIsNoneOrEmpty(string value) Global
-	{Indicates whether the specified string is a none or empty string.}
-	return !(value) || value == ""
 EndFunction

@@ -112,10 +112,10 @@ EndFunction
 
 string Function GetMember(string member)
 	{Returns the full AS3 instance path for the given member name.}
-	If (StringIsNoneOrEmpty(member))
+	If !(member)
 		WriteUnexpectedValue(self, "GetMember", "member", "The value cannot be none or empty.")
 		return ""
-	ElseIf (StringIsNoneOrEmpty(Root))
+	ElseIf !(Root)
 		WriteUnexpectedValue(self, "GetMember", "Root", "The value cannot be none or empty.")
 		return ""
 	Else

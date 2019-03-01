@@ -60,9 +60,14 @@ bool Function ItemFilter(Form item)
 EndFunction
 
 
+bool Function HasSlotMask(Armor armo, int value) Global
+	return Math.LogicalAnd(armo.GetSlotMask(), value) == value
+EndFunction
+
+
 bool Function Equipment()
 	string value = GetURI()
-	If (StringIsNoneOrEmpty(value) != true) ; do not allow a change to none/empty
+	If (value) ; Do not allow a change to none/empty value. A none value is valid for TryChange.
 		If (TryChange(value))
 			return ChangeState(self, EquippedState)
 		Else
@@ -85,7 +90,7 @@ string Function GetURI()
 				int index = 0
 				While (index < mods.Length)
 					value = GetLooseMod(mods[index])
-					If (!StringIsNoneOrEmpty(value))
+					If (value)
 						WriteLine(self, "GetURI", "LooseMod:'"+value+"'")
 						return value
 					EndIf
@@ -94,7 +99,7 @@ string Function GetURI()
 			EndIf
 			;---------------------------------------------
 			value = GetWorldModel(worn)
-			If (!StringIsNoneOrEmpty(value))
+			If (value)
 				WriteLine(self, "GetURI", "WorldModel:'"+value+"'")
 				return value
 			Else
@@ -150,7 +155,6 @@ bool Function TryChange(string value)
 EndFunction
 
 
-
 ; Client API
 ;---------------------------------------------
 
@@ -165,7 +169,7 @@ EndProperty
 
 ; UNUSED
 Actor:WornItem Function GetWorn()
-	{Scans down the the highest slot of an eye slot item.}
+	{Scans down the highest slot of an eye slot item.}
 	int slot = 0
 	While (slot <= BipedEyes)
 		Actor:WornItem worn = Player.GetWornItem(slot, ThirdPerson)
@@ -203,14 +207,6 @@ EndFunction
 
 var Function Invoke(string member, var[] arguments = none)
 	return UI.Invoke(Menu.Name, member, arguments)
-EndFunction
-
-
-; Functions
-;---------------------------------------------
-
-bool Function HasSlotMask(Armor armo, int value)
-	return Math.LogicalAnd(armo.GetSlotMask(), value) == value
 EndFunction
 
 
@@ -282,7 +278,7 @@ State Equipped
 	bool Function Equipment()
 		string value = GetURI()
 		If (TryChange(value)) ; ALLOW a change to none/empty
-			If (StringIsNoneOrEmpty(value))
+			If (!value)
 				return ClearState(self)
 			Else
 				return Menu.SetURI(URI)

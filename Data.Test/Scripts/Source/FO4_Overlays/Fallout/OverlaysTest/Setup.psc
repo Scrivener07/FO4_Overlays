@@ -85,6 +85,9 @@ Event OnQuestInit()
 
 	Try(Scouter, Armor_Scouter)
 
+	Try(Titanfall, Armor_TitanHead)
+	Try(Titanfall, Armor_TitanHeadNEON)
+
 	WriteLine(self, "Added items for debug testing.")
 EndEvent
 
@@ -187,4 +190,10 @@ EndGroup
 Group Scouter
 	string Property Scouter = "Scouter_V1.1_by_Ruddy88.esp" AutoReadOnly
 	int Property Armor_Scouter = 0x00000800 AutoReadOnly
+EndGroup
+
+Group Titanfall
+	string Property Titanfall = "TitanfallSuit.esp" AutoReadOnly
+	int Property Armor_TitanHead = 0x00000802 AutoReadOnly
+	int Property Armor_TitanHeadNEON = 0x00000821 AutoReadOnly
 EndGroup
