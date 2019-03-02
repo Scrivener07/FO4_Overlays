@@ -60,9 +60,14 @@ bool Function ItemFilter(Form item)
 EndFunction
 
 
+bool Function HasSlotMask(Armor armo, int value) Global
+	return Math.LogicalAnd(armo.GetSlotMask(), value) == value
+EndFunction
+
+
 bool Function Equipment()
 	string value = GetURI()
-	If (StringIsNoneOrEmpty(value) != true) ; do not allow a change to none/empty
+	If (value) ; Do not allow a change to none/empty value. A none value is valid for TryChange.
 		If (TryChange(value))
 			return ChangeState(self, EquippedState)
 		Else
@@ -75,6 +80,10 @@ EndFunction
 
 
 string Function GetURI()
+	{Gets the URI string for any eye slot armor.}
+	; #1 Check the Armor's ObjectMods for any associated loose mod with an icon path.
+	; #2 Check the Armor's world model path.
+	; #3 Check the Armor's model path.
 	int slot = 0
 	While (slot <= BipedEyes)
 		Actor:WornItem worn = Player.GetWornItem(slot, ThirdPerson)
@@ -85,7 +94,7 @@ string Function GetURI()
 				int index = 0
 				While (index < mods.Length)
 					value = GetLooseMod(mods[index])
-					If (!StringIsNoneOrEmpty(value))
+					If (value)
 						WriteLine(self, "GetURI", "LooseMod:'"+value+"'")
 						return value
 					EndIf
@@ -94,7 +103,7 @@ string Function GetURI()
 			EndIf
 			;---------------------------------------------
 			value = GetWorldModel(worn)
-			If (!StringIsNoneOrEmpty(value))
+			If (value)
 				WriteLine(self, "GetURI", "WorldModel:'"+value+"'")
 				return value
 			Else
@@ -120,6 +129,7 @@ string Function GetLooseMod(ObjectMod omod)
 EndFunction
 
 
+; TODO: The F4SE function GetWorldModelPath does not seem to work on Armor forms.
 string Function GetWorldModel(Actor:WornItem worn)
 	{Derived from the armor world model path.}
 	Armor armo = worn.Item as Armor
@@ -149,6 +159,69 @@ bool Function TryChange(string value)
 EndFunction
 
 
+; Client API
+;---------------------------------------------
+
+; UNUSED
+Armor Property Equipped Hidden
+	{Returns the equipped eyes item. This may be performance heavy?}
+	Armor Function Get()
+		return GetWorn().Item as Armor
+	EndFunction
+EndProperty
+
+
+; UNUSED
+Actor:WornItem Function GetWorn()
+	{Scans down the highest slot of an eye slot item.}
+	int slot = 0
+	While (slot <= BipedEyes)
+		Actor:WornItem worn = Player.GetWornItem(slot, ThirdPerson)
+		If (ItemFilter(worn.Item))
+			return worn
+		EndIf
+		slot += 1
+	EndWhile
+	WriteUnexpectedValue(self, "GetWorn", "value", "No biped slot has a valid eyes item.")
+	return none
+EndFunction
+
+;---------------------------------------------
+
+string Function GetMember(string member)
+	{Provides instance member paths the client.}
+	If (member)
+		return Menu.GetClientMember(member)
+	Else
+		WriteUnexpectedValue(self, "GetMember", "member", "The value cannot be none or empty.")
+		return ""
+	EndIf
+EndFunction
+
+
+var Function Get(string menuName, string member)
+	return UI.Get(Menu.Name, member)
+EndFunction
+
+
+bool Function Set(string member, var argument)
+	return UI.Set(Menu.Name, member, argument)
+EndFunction
+
+
+var Function Invoke(string member, var[] arguments = none)
+	return UI.Invoke(Menu.Name, member, arguments)
+EndFunction
+
+
+; Globals
+;---------------------------------------------
+
+Overlays:Framework Function OverlayFramework() Global
+	return Game.GetFormFromFile(0x00000F99, "Overlays.esp") as Overlays:Framework
+EndFunction
+
+
 ; States
 ;---------------------------------------------
 
@@ -156,34 +229,38 @@ State Equipped
 	Event OnBeginState(string asOldState)
 		WriteLine(self, "Equipped.OnBeginState")
 		RegisterForCameraState()
-		RegisterForMenuOpenCloseEvent(OverlayMenu.Name)
+		RegisterForMenuOpenCloseEvent(Menu.Name)
 		RegisterForGameReload(self)
-		OverlayMenu.Open()
+		Menu.Open()
 	EndEvent
 
 	;---------------------------------------------
 
 	Event OnGameReload()
 		WriteLine(self, "Equipped.OnGameReload")
-		OverlayMenu.Open()
+		Menu.Open()
 	EndEvent
 
-	Event OnMenuOpenCloseEvent(string asMenuName, bool abOpening)
-		WriteLine(self, "Equipped.OnMenuOpenCloseEvent(asMenuName="+asMenuName+", abOpening="+abOpening+")")
-		If (asMenuName == OverlayMenu.Name)
-			If (abOpening)
-				OverlayMenu.SetURI(URI)
-				OverlayMenu.SetAlpha(Fallout_Overlays_Alpha.GetValue())
-				OverlayMenu.SetVisible(IsFirstPerson)
+	Event OnMenuOpenCloseEvent(string menuName, bool opening)
+		WriteLine(self, "Equipped.OnMenuOpenCloseEvent(menuName="+menuName+", opening="+opening+")")
+		If (menuName == Menu.Name)
+			If (opening)
+				Menu.SetURI(URI)
+				Menu.SetAlpha(Fallout_Overlays_Alpha.GetValue())
+				Menu.SetVisible(IsFirstPerson)
 			Else
-				OverlayMenu.Open()
+				Menu.Open()
 			EndIf
+
+			OpenCloseEventArgs e = new OpenCloseEventArgs
+			e.Opening = opening
+			self.SendOpenCloseEvent(e)
 		EndIf
 	EndEvent
 
 	Event OnPlayerCameraState(int aiOldState, int aiNewState)
 		WriteLine(self, "Equipped.OnPlayerCameraState(aiOldState="+aiOldState+", aiNewState="+aiNewState+")")
-		OverlayMenu.SetVisible(IsFirstPerson)
+		Menu.SetVisible(IsFirstPerson)
 	EndEvent
 
 	;---------------------------------------------
@@ -205,10 +282,10 @@ State Equipped
 	bool Function Equipment()
 		string value = GetURI()
 		If (TryChange(value)) ; ALLOW a change to none/empty
-			If (StringIsNoneOrEmpty(value))
+			If (!value)
 				return ClearState(self)
 			Else
-				return OverlayMenu.SetURI(URI)
+				return Menu.SetURI(URI)
 			EndIf
 		Else
 			return false
@@ -222,16 +299,60 @@ State Equipped
 		UnregisterForCameraState()
 		UnregisterForAllMenuOpenCloseEvents()
 		UnregisterForGameReload(self)
-		OverlayMenu.Close()
+		Menu.Close()
 	EndEvent
 EndState
 
 
-; Functions
+; Open/Close Event
 ;---------------------------------------------
 
-bool Function HasSlotMask(Armor armo, int value)
-	return Math.LogicalAnd(armo.GetSlotMask(), value) == value
+CustomEvent OpenCloseEvent
+
+Struct OpenCloseEventArgs
+	bool Opening = false
+EndStruct
+
+
+Function SendOpenCloseEvent(OpenCloseEventArgs e)
+	If (e)
+		var[] arguments = new var[1]
+		arguments[0] = e
+		self.SendCustomEvent("OpenCloseEvent", arguments)
+	Else
+		WriteLine(self, "SendOpenCloseEvent : e : Cannot be none.")
+	EndIf
+EndFunction
+
+
+bool Function RegisterForOpenCloseEvent(ScriptObject script)
+	If (script)
+		script.RegisterForCustomEvent(self, "OpenCloseEvent")
+		return true
+	Else
+		WriteLine(self, "RegisterForOpenCloseEvent : script : Cannot register a none script for events.")
+		return false
+	EndIf
+EndFunction
+
+
+bool Function UnregisterForOpenCloseEvent(ScriptObject script)
+	If (script)
+		script.UnregisterForCustomEvent(self, "OpenCloseEvent")
+		return true
+	Else
+		WriteLine(self, "UnregisterForOpenCloseEvent : script : Cannot unregister a none script for events.")
+		return false
+	EndIf
+EndFunction
+
+
+OpenCloseEventArgs Function GetOpenCloseEventArgs(var[] arguments)
+	If (arguments)
+		return arguments[0] as OpenCloseEventArgs
+	Else
+		return none
+	EndIf
 EndFunction
 
 
@@ -244,7 +365,7 @@ Group Properties
 EndGroup
 
 Group Overlay
-	Overlays:Menu Property OverlayMenu Auto Const Mandatory
+	Overlays:Menu Property Menu Auto Const Mandatory
 EndGroup
 
 Group Camera

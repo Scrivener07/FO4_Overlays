@@ -112,14 +112,24 @@ EndFunction
 
 string Function GetMember(string member)
 	{Returns the full AS3 instance path for the given member name.}
-	If (StringIsNoneOrEmpty(member))
-		WriteUnexpectedValue(self, "GetMember", "member", "Cannot operate on a none or empty member.")
-		return none
-	ElseIf (StringIsNoneOrEmpty(Root))
-		WriteUnexpected(self, "GetMember", "Cannot operate on a none or empty instance path.")
-		return none
+	If !(member)
+		WriteUnexpectedValue(self, "GetMember", "member", "The value cannot be none or empty.")
+		return ""
+	ElseIf !(Root)
+		WriteUnexpectedValue(self, "GetMember", "Root", "The value cannot be none or empty.")
+		return ""
 	Else
 		return Root+"."+member
+	EndIf
+EndFunction
+
+
+string Function GetClientMember(string member)
+	If (member)
+		return GetMember(Client+"."+member)
+	Else
+		WriteUnexpectedValue(self, "GetClientMember", "member", "The value cannot be none or empty.")
+		return ""
 	EndIf
 EndFunction
 
@@ -152,6 +162,14 @@ Group Properties
 		string Function Get()
 			{The root instance path of this menu's display object.}
 			return "root1"
+		EndFunction
+	EndProperty
+
+	string Property Client Hidden
+		string Function Get()
+			{The instance path of the client's display object.}
+			; This will change if any display objects are added or removed in the Flash editor.
+			return "Overlay.instance3"
 		EndFunction
 	EndProperty
 

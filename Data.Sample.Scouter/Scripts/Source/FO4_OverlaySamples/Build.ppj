@@ -12,6 +12,7 @@
 	>
 	<Imports>
 		<Import>.</Import>
+		<Import>..\FO4_Overlays</Import>
 		<Import>..\F4SE</Import>
 		<Import>..\Base</Import>
 	</Imports>

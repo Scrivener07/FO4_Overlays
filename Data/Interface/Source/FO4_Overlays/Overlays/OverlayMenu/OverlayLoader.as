@@ -1,4 +1,4 @@
-package
+﻿package
 {
 	import flash.display.DisplayObject;
 	import flash.display.Loader;
@@ -7,11 +7,12 @@ package
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.net.URLRequest;
-	import AS3.*;
-	import F4SE.*;
-	import Overlays.*;
+	import Shared.AS3.Debug;
+	import Shared.AS3.Path;
+	import Shared.AS3.Utility;
+	import Shared.F4SE.ICodeObject;
 
-	public dynamic class OverlayLoader extends MovieClip implements F4SE.IExtensions
+	public dynamic class OverlayLoader extends MovieClip implements Shared.F4SE.ICodeObject
 	{
 		private var f4se:*;
 
@@ -56,7 +57,7 @@ package
 			if(codeObject != null)
 			{
 				f4se = codeObject;
-				Debug.WriteLine("[OverlayLoader]", "(onF4SEObjCreated)", "Received F4SE code object.", "Version:"+F4SE.Extensions.GetVersion(f4se).toString());
+				Debug.WriteLine("[OverlayLoader]", "(onF4SEObjCreated)", "Received F4SE code object.");
 			}
 			else
 			{
@@ -67,11 +68,11 @@ package
 
 		private function OnLoadComplete(e:Event):void
 		{
-			addChild(Content);
-			Utility.ScaleToHeight(Content, DefaultHeight); // Note: The default height of 720 works for dds files.
-			// Utility.ScaleToHeight(this, Resolution); // Note: The stage height works for swf files.
-
+			// Note: Scale to default height of 720 works for dds files. The stage height works for swf files.
+			this.addChild(Content);
+			Utility.ScaleToHeight(Content, DefaultHeight);
 			this.visible = true;
+			Debug.TraceDisplayList(MovieClip(stage.getChildAt(0)));
 			Debug.WriteLine("[OverlayLoader]", "(OnLoadComplete)", e.toString()+", "+toString());
 		}
 
@@ -82,12 +83,12 @@ package
 			var extension:String = Path.GetFileExtension(e.text)
 			if(extension == SWF)
 			{
-				Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", e.toString()+", No SWF file was found, trying DDS files. "+toString());
+				Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", e.toString()+"\nNo SWF file was found, trying DDS files. "+toString());
 				Load(LastFile, DDS);
 			}
 			else if (extension == DDS)
 			{
-				Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", e.toString()+", No suitable files were found. "+toString());
+				Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", e.toString()+", No DDS file was found. "+toString());
 			}
 			else
 			{
@@ -99,10 +100,10 @@ package
 		// Functions
 		//---------------------------------------------
 
-		public function TryLoad(filepath:String):void
+		public function TryLoad(filepath:String):Boolean
 		{
 			Uri = filepath;
-			Load(filepath, SWF);
+			return Load(filepath, SWF);
 		}
 
 
@@ -114,6 +115,9 @@ package
 			filepath = value;
 			var urlRequest:URLRequest;
 
+
+
+
 			if (extension == SWF)
 			{
 				urlRequest = new URLRequest(filepath);
@@ -123,7 +127,7 @@ package
 			{
 				if(GetTextureExists(filepath))
 				{
-					F4SE.Extensions.MountImage(f4se, OverlayMenu.Name, filepath, ImageMountID);
+					Shared.F4SE.Extensions.MountImage(f4se, OverlayMenu.Name, filepath, ImageMountID);
 					urlRequest = new URLRequest("img://"+ImageMountID);
 					Debug.WriteLine("[OverlayLoader]", "(Load)", "DDS: '"+urlRequest.url+"' as '"+filepath+"' to "+OverlayMenu.Name+" with resource ID "+ImageMountID);
 				}
@@ -139,6 +143,9 @@ package
 				return false;
 			}
 
+
+
+
 			LastFile = filepath;
 			ContentLoader.load(urlRequest);
 			return true;
@@ -148,15 +155,22 @@ package
 		private function GetTextureExists(filepath:String):Boolean
 		{
 			var folder:String = Path.GetDirectory("Data\\Textures\\"+filepath);
-			return F4SE.Extensions.GetDirectoryListing(f4se, folder, "*.dds", true).length > 0;
+			return Shared.F4SE.Extensions.GetDirectoryListing(f4se, folder, "*.dds", true).length > 0;
 		}
 
 
-		private function Clear():void
+		private function Clear():Boolean
 		{
 			this.visible = false;
+
+
 			Unmount(LastFile);
+
+
 			Unload();
+
+
+			return true;
 		}
 
 
@@ -166,7 +180,7 @@ package
 			{
 				if(Path.GetFileExtension(filepath) == DDS)
 				{
-					F4SE.Extensions.UnmountImage(f4se, OverlayMenu.Name, filepath);
+					Shared.F4SE.Extensions.UnmountImage(f4se, OverlayMenu.Name, filepath);
 					Debug.WriteLine("[OverlayLoader]", "(Unmount)", "Unmounted the image '"+filepath+"' from "+OverlayMenu.Name+" with resource ID "+ImageMountID);
 					return true;
 				}
@@ -190,7 +204,7 @@ package
 			{
 				this.visible = false;
 				removeChild(Content);
-				Content.loaderInfo.loader.unload();
+				ContentLoader.unload();
 				Debug.WriteLine("[OverlayLoader]", "(Unload)", "Unloaded content from loader.");
 				return true;
 			}

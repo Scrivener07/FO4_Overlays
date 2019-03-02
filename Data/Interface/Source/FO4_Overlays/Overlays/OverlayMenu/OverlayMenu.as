@@ -3,8 +3,7 @@
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
-	import AS3.*;
-	import Overlays.*;
+	import Shared.AS3.Debug;
 
 	public class OverlayMenu extends MovieClip
 	{
