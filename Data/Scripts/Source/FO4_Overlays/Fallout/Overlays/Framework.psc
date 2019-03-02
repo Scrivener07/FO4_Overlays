@@ -80,6 +80,10 @@ EndFunction
 
 
 string Function GetURI()
+	{Gets the URI string for any eye slot armor.}
+	; #1 Check the Armor's ObjectMods for any associated loose mod with an icon path.
+	; #2 Check the Armor's world model path.
+	; #3 Check the Armor's model path.
 	int slot = 0
 	While (slot <= BipedEyes)
 		Actor:WornItem worn = Player.GetWornItem(slot, ThirdPerson)
