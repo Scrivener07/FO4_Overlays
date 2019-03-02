@@ -2,7 +2,8 @@ package
 {
 	import flash.display.MovieClip;
 	import flash.events.Event;
-	import AS3.*;
+	import Shared.AS3.Debug;
+	import Shared.AS3.Utility;
 
 	public class ScouterOverlay extends MovieClip
 	{

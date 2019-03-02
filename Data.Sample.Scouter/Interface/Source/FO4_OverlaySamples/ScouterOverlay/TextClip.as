@@ -2,7 +2,7 @@ package
 {
 	import flash.display.MovieClip;
 	import flash.text.TextField;
-	import AS3.*;
+	import Shared.AS3.Debug;
 
 	public class TextClip extends MovieClip
 	{
