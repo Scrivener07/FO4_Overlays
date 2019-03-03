@@ -42,7 +42,7 @@ package
 			TextBox1.Value = rootMenu.loaderInfo.url;
 
 			TextBox2.Label = "Instance";
-			TextBox2.Value = Utility.WalkMovieFrom(this, rootMenu);
+			TextBox2.Value = Utility.GetInstanceFrom(this, rootMenu);
 
 			TextBox3.Label = "Test Test";
 			TextBox3.Value = "Hello World!";
