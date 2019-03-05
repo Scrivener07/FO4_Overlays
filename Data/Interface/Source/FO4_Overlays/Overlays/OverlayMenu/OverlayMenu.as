@@ -3,6 +3,7 @@
 	import flash.display.MovieClip;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
+	import flash.net.URLRequest;
 	import System.Diagnostics.Debug;
 
 	public class OverlayMenu extends MovieClip
@@ -29,10 +30,10 @@
 		// Methods
 		//---------------------------------------------
 
-		public function SetURI(uri:String):void
+		public function SetURI(filepath:String):void
 		{
-			Debug.WriteLine("[OverlayMenu]", "(SetURI)", "Setting the uri to '"+uri+"'");
-			Overlay.TryLoad(uri);
+			Debug.WriteLine("[OverlayMenu]", "(SetURI)", "Setting the filepath to '"+filepath+"'");
+			Overlay.Load(filepath);
 		}
 
 

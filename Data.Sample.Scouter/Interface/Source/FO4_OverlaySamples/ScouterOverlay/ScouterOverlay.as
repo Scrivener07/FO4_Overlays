@@ -2,8 +2,8 @@ package
 {
 	import flash.display.MovieClip;
 	import flash.events.Event;
-	import Shared.AS3.Debug;
-	import Shared.AS3.Utility;
+	import System.Diagnostics.Debug;
+	import System.Display;
 
 	public class ScouterOverlay extends MovieClip
 	{
@@ -22,19 +22,19 @@ package
 			Debug.WriteLine("[ScouterOverlay]", "(ctor)", "Constructor Code");
 			if (stage)
 			{
-				onAddedToStage(null);
+				OnAddedToStage(null);
 			}
 			else
 			{
-				addEventListener(Event.ADDED_TO_STAGE, onAddedToStage)
+				addEventListener(Event.ADDED_TO_STAGE, OnAddedToStage)
 			}
 		}
 
 
-		private function onAddedToStage(e:Event):void
+		private function OnAddedToStage(e:Event):void
 		{
-			Debug.WriteLine("[ScouterOverlay]", "(onAddedToStage)");
-			removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			Debug.WriteLine("[ScouterOverlay]", "(OnAddedToStage)");
+			removeEventListener(Event.ADDED_TO_STAGE, OnAddedToStage);
 
 			var rootMenu:MovieClip = MovieClip(stage.getChildAt(0));
 
@@ -42,7 +42,7 @@ package
 			TextBox1.Value = rootMenu.loaderInfo.url;
 
 			TextBox2.Label = "Instance";
-			TextBox2.Value = Utility.GetInstanceFrom(this, rootMenu);
+			TextBox2.Value = Display.GetInstanceFrom(this, rootMenu);
 
 			TextBox3.Label = "Test Test";
 			TextBox3.Value = "Hello World!";
