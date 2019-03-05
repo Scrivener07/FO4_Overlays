@@ -42,7 +42,6 @@
 
 		override protected function OnLoadError(e:IOErrorEvent):void
 		{
-			super.OnLoadError(e);
 			var extension:String = Path.GetExtension(FilePath)
 
 			if (extension == File.SWF)
@@ -50,6 +49,7 @@
 				var filepath = Path.ChangeExtension(FilePath, File.DDS);
 				if (File.ExistsIn(XSE, FileSystem.Textures, filepath))
 				{
+					Unmount(FilePath);
 					F4SE.Extensions.MountImage(XSE, OverlayMenu.Name, filepath, ImageMountID);
 					Load(filepath, "img://"+ImageMountID);
 					Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", "No SWF file was found, converting file path from '"+FilePath+"' to '"+filepath+"'.");
@@ -57,7 +57,6 @@
 				else
 				{
 					Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", "The file '"+filepath+"' does not exist.");
-					return;
 				}
 			}
 			else if (extension == File.DDS)
@@ -68,6 +67,8 @@
 			{
 				Debug.WriteLine("[OverlayLoader]", "(OnLoadError)", e.toString()+", The error was unhandled. "+toString());
 			}
+
+			this.dispatchEvent(new Event(LOAD_ERROR));
 		}
 
 
@@ -93,8 +94,9 @@
 			{
 				if (File.ExistsIn(XSE, FileSystem.Textures, filepath))
 				{
+					Debug.WriteLine("[OverlayLoader]", "(Load)", "DDS: '"+ImageMountID+"' as '"+filepath+"'.", "OLD:"+FilePath);
+					Unmount(FilePath);
 					F4SE.Extensions.MountImage(XSE, OverlayMenu.Name, filepath, ImageMountID);
-					Debug.WriteLine("[OverlayLoader]", "(Load)", "DDS: '"+ImageMountID+"' as '"+filepath+"'.");
 					return super.Load(filepath, "img://"+ImageMountID);
 				}
 				else
@@ -111,12 +113,10 @@
 		}
 
 
-		override public function Unload():Boolean
-		{
-			var bUnmount:Boolean = Unmount(FilePath);
-			var bUnload:Boolean = super.Unload();
-			return bUnmount && bUnload;
-		}
+		// override public function Unload():Boolean
+		// {
+		// 	return super.Unload();
+		// }
 
 
 		private function Unmount(filepath:String):Boolean

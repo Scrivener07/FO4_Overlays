@@ -17,6 +17,8 @@ int Invalid = -1 const
 int BipedEyes = 17 const
 bool ThirdPerson = false const
 
+string ExamineMenu = "ExamineMenu" const
+
 
 ; Events
 ;---------------------------------------------
@@ -38,15 +40,15 @@ Event OnQuestShutdown()
 EndEvent
 
 
-Event Actor.OnItemEquipped(Actor sender, Form akBaseObject, ObjectReference akReference)
-	If (ItemFilter(akBaseObject))
-		WriteLine(self, "Actor.OnItemEquipped", "akBaseObject="+akBaseObject)
+Event Actor.OnItemEquipped(Actor sender, Form baseObject, ObjectReference reference)
+	If (ItemFilter(baseObject))
+		WriteLine(self, "Actor.OnItemEquipped", "baseObject="+baseObject)
 		Equipment()
 	EndIf
 EndEvent
 
 
-Event Actor.OnItemUnequipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
+Event Actor.OnItemUnequipped(Actor sender, Form baseObject, ObjectReference reference)
 	{EMPTY}
 EndEvent
 
@@ -226,7 +228,7 @@ EndFunction
 ;---------------------------------------------
 
 State Equipped
-	Event OnBeginState(string asOldState)
+	Event OnBeginState(string oldState)
 		WriteLine(self, "Equipped.OnBeginState")
 		RegisterForCameraState()
 		RegisterForMenuOpenCloseEvent(Menu.Name)
@@ -256,25 +258,29 @@ State Equipped
 			e.Opening = opening
 			self.SendOpenCloseEvent(e)
 		EndIf
+
+		If (menuName == ExamineMenu && !opening)
+			Menu.SetURI(URI)
+		EndIF
 	EndEvent
 
-	Event OnPlayerCameraState(int aiOldState, int aiNewState)
-		WriteLine(self, "Equipped.OnPlayerCameraState(aiOldState="+aiOldState+", aiNewState="+aiNewState+")")
+	Event OnPlayerCameraState(int oldState, int newState)
+		WriteLine(self, "Equipped.OnPlayerCameraState(oldState="+oldState+", newState="+newState+")")
 		Menu.SetVisible(IsFirstPerson)
 	EndEvent
 
 	;---------------------------------------------
 
-	Event Actor.OnItemEquipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
-		If (ItemFilter(akBaseObject))
-			WriteLine(self, "Equipped.Actor.OnItemEquipped", "akBaseObject="+akBaseObject)
+	Event Actor.OnItemEquipped(Actor sender, Form baseObject, ObjectReference reference)
+		If (ItemFilter(baseObject))
+			WriteLine(self, "Equipped.Actor.OnItemEquipped", "baseObject="+baseObject)
 			Equipment()
 		EndIf
 	EndEvent
 
-	Event Actor.OnItemUnequipped(Actor akSender, Form akBaseObject, ObjectReference akReference)
-		If (ItemFilter(akBaseObject))
-			WriteLine(self, "Equipped.Actor.OnItemUnequipped", "akBaseObject="+akBaseObject)
+	Event Actor.OnItemUnequipped(Actor sender, Form baseObject, ObjectReference reference)
+		If (ItemFilter(baseObject))
+			WriteLine(self, "Equipped.Actor.OnItemUnequipped", "baseObject="+baseObject)
 			Equipment()
 		EndIf
 	EndEvent
@@ -294,7 +300,7 @@ State Equipped
 
 	;---------------------------------------------
 
-	Event OnEndState(string asNewState)
+	Event OnEndState(string newState)
 		WriteLine(self, "Equipped.OnEndState")
 		UnregisterForCameraState()
 		UnregisterForAllMenuOpenCloseEvents()
