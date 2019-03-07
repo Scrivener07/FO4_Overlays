@@ -5,7 +5,7 @@
 
 	public class OverlayMenu extends MovieClip
 	{
-		public var Overlay:OverlayLoader;
+		private var Overlay:OverlayLoader;
 		private const Name:String = "OverlayMenu";
 		private const MountID:String = "OverlayMenu_ImageMount";
 
@@ -22,8 +22,8 @@
 		public function OverlayMenu()
 		{
 			System.Diagnostics.Debug.Prefix = "Overlay Framework";
-			Overlay.MenuName = Name;
-			Overlay.MountID = MountID;
+			Overlay = new OverlayLoader(Name, MountID);
+			this.addChild(Overlay);
 			Debug.WriteLine("[OverlayMenu]", "(ctor)", "Constructor Code", this.loaderInfo.url);
 		}
 

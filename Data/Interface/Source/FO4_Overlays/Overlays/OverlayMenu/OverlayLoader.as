@@ -12,10 +12,20 @@
 	import System.IO.Path;
 
 	/**
-	 *
+	 * This still wont switch from one overlay to another.
+	 * Unloading the entire menu makes it work. (unequipping)
 	 */
 	public dynamic class OverlayLoader extends LoaderType
 	{
+
+		// Initialize
+		//---------------------------------------------
+
+		public function OverlayLoader(menuName:String, mountID:String)
+		{
+			super(menuName, mountID);
+		}
+
 
 		// Events
 		//---------------------------------------------
@@ -62,6 +72,7 @@
 			else
 			{
 				Debug.WriteLine("[OverlayLoader]", "No overlay file was found.");
+				Unload();
 				return false;
 			}
 		}
