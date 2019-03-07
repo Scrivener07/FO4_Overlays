@@ -1,15 +1,13 @@
 ﻿package
 {
 	import flash.display.MovieClip;
-	import flash.events.Event;
-	import flash.events.IOErrorEvent;
-	import flash.net.URLRequest;
 	import System.Diagnostics.Debug;
 
 	public class OverlayMenu extends MovieClip
 	{
 		public var Overlay:OverlayLoader;
-		public static const Name:String = "OverlayMenu";
+		private const Name:String = "OverlayMenu";
+		private const MountID:String = "OverlayMenu_ImageMount";
 
 		public function get Visible():Boolean { return this.visible; }
 		public function set Visible(value:Boolean):void { this.visible = value; }
@@ -23,6 +21,9 @@
 
 		public function OverlayMenu()
 		{
+			System.Diagnostics.Debug.Prefix = "Overlay Framework";
+			Overlay.MenuName = Name;
+			Overlay.MountID = MountID;
 			Debug.WriteLine("[OverlayMenu]", "(ctor)", "Constructor Code", this.loaderInfo.url);
 		}
 
