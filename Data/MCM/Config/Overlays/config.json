@@ -11,7 +11,7 @@
 			"valueOptions":
 			{
 				"sourceType": "GlobalValue",
-				"sourceForm": "Overlays.esp|5B95",
+				"sourceForm": "Overlays.esm|5B95",
 				"min": 0.0,
 				"max": 1.0,
 				"step": 0.01
@@ -19,7 +19,7 @@
 			"action":
 			{
 				"type": "CallFunction",
-				"form": "Overlays.esp|F99",
+				"form": "Overlays.esm|F99",
 				"function": "SetAlpha",
 				"params": ["{value}"],
 				"scriptName": "Fallout:Overlays:Configuration"
@@ -32,7 +32,7 @@
 			"valueOptions":
 			{
 				"sourceType": "GlobalValue",
-				"sourceForm": "Overlays.esp|632F",
+				"sourceForm": "Overlays.esm|632F",
 				"min": 0.0,
 				"max": 5.0,
 				"step": 0.25
@@ -40,7 +40,7 @@
 			"action":
 			{
 				"type": "CallFunction",
-				"form": "Overlays.esp|F99",
+				"form": "Overlays.esm|F99",
 				"function": "SetScopeAlpha",
 				"params": ["{value}"],
 				"scriptName": "Fallout:Overlays:Configuration"
@@ -53,7 +53,7 @@
 			"valueOptions":
 			{
 				"sourceType": "GlobalValue",
-				"sourceForm": "Overlays.esp|7263",
+				"sourceForm": "Overlays.esm|7263",
 				"min": 0.0,
 				"max": 1.0,
 				"step": 0.01
@@ -61,7 +61,7 @@
 			"action":
 			{
 				"type": "CallFunction",
-				"form": "Overlays.esp|F99",
+				"form": "Overlays.esm|F99",
 				"function": "SetScopeAlpha",
 				"params": ["{value}"],
 				"scriptName": "Fallout:Overlays:Configuration"
