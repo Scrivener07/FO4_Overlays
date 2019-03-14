@@ -57,6 +57,25 @@ bool Function Close()
 EndFunction
 
 
+bool Function Load(string value)
+	If (IsOpen)
+		If (value)
+			var[] arguments = new var[1]
+			arguments[0] = value
+			UI.Invoke(Name, GetMember("Load"), arguments)
+			WriteLine(self, "Load:"+value)
+			return true
+		Else
+			WriteUnexpectedValue(self, "Load", "value", "The value cannot be none or empty.")
+			return false
+		EndIf
+	Else
+		WriteUnexpected(self, "Load", ToString()+" is not open.")
+		return false
+	EndIf
+EndFunction
+
+
 bool Function GetVisible()
 	If (IsOpen)
 		return UI.Get(Name, GetMember("Visible")) as bool
@@ -88,20 +107,16 @@ bool Function SetAlpha(float value)
 EndFunction
 
 
-bool Function SetURI(string value)
+bool Function AlphaTo(float value, float duration)
 	If (IsOpen)
-		If (value)
-			var[] arguments = new var[1]
-			arguments[0] = value
-			UI.Invoke(Name, GetMember("SetURI"), arguments)
-			WriteLine(self, "SetURI:"+value)
-			return true
-		Else
-			WriteUnexpectedValue(self, "SetURI", "value", "The value cannot be none or empty.")
-			return false
-		EndIf
+		var[] arguments = new var[2]
+		arguments[0] = value
+		arguments[1] = duration
+		UI.Invoke(Name, GetMember("AlphaTo"), arguments)
+		WriteLine(self, "AlphaTo", "value:"+value+", duration:"+duration)
+		return true
 	Else
-		WriteUnexpected(self, "SetURI", ToString()+" is not open.")
+		WriteUnexpected(self, "AlphaTo", ToString()+" is not open.")
 		return false
 	EndIf
 EndFunction
@@ -168,7 +183,7 @@ Group Properties
 	string Property Client Hidden
 		string Function Get()
 			{The instance path of the client's display object.}
-			; This will change if any display objects are added or removed in the Flash editor.
+			; TODO: This will change if any display objects are added or removed in the Flash editor.
 			return "Overlay.instance3"
 		EndFunction
 	EndProperty

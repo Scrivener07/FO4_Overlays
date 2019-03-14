@@ -1,14 +1,14 @@
 Scriptname Scouter:Overlay extends Quest
 {Provides advanced overlay interactions for the scouter.}
 import Scouter:Log
-import Fallout:Overlays:Framework
+import Fallout:Overlays:Client
 
 Actor Player
 Armor Scouter
 
-Fallout:Overlays:Framework Framework
 string TextBox4_Label = ""
 string TextBox4_Value = ""
+
 string TextBox5_Label = ""
 string TextBox5_Value = ""
 
@@ -32,18 +32,12 @@ Function OnGameReload()
 	If (Plugin.IsInstalled)
 		Scouter = Plugin.GetArmor(Plugin._R_Scouter)
 		If (Scouter)
-			Framework = OverlayFramework()
-			If (Framework)
-				TextBox4_Label = Framework.GetMember("TextBox4.Label")
-				TextBox4_Value = Framework.GetMember("TextBox4.Value")
-				TextBox5_Label = Framework.GetMember("TextBox5.Label")
-				TextBox5_Value = Framework.GetMember("TextBox5.Value")
-				Framework.RegisterForOpenCloseEvent(self)
-
-				WriteLine(self, "OnGameReload")
-			Else
-				WriteUnexpectedValue(self, "OnGameReload", "Framework", "The script object cannot be none.")
-			EndIf
+			TextBox4_Label = Client.GetMember("TextBox4.Label")
+			TextBox4_Value = Client.GetMember("TextBox4.Value")
+			TextBox5_Label = Client.GetMember("TextBox5.Label")
+			TextBox5_Value = Client.GetMember("TextBox5.Value")
+			Client.RegisterForOpenCloseEvent(self)
+			WriteLine(self, "OnGameReload")
 		Else
 			WriteUnexpectedValue(self, "OnGameReload", "Scouter", "The Armor cannot be none.")
 		EndIf
@@ -53,20 +47,19 @@ Function OnGameReload()
 EndFunction
 
 
-Event Fallout:Overlays:Framework.OpenCloseEvent(Fallout:Overlays:Framework sender, var[] arguments)
-	OpenCloseEventArgs e = sender.GetOpenCloseEventArgs(arguments)
+Event Fallout:Overlays:Client.OpenCloseEvent(Fallout:Overlays:Client sender, var[] arguments)
+	OpenCloseEventArgs e = Client.GetOpenCloseEventArgs(arguments)
 	If (e.Opening)
-		If (sender.Equipped == Scouter)
+		If (Client.Equipped == Scouter)
 			WriteLine(self, "Invoking AS3 code on the scouter overlay.")
 
 			Game:PluginInfo info = Plugin.GetInfo()
 
-			sender.Set(TextBox4_Label, "Mod")
-			sender.Set(TextBox4_Value, info.name+" by "+info.author)
+			Client.Set(TextBox4_Label, "Mod")
+			Client.Set(TextBox4_Value, info.name+" by "+info.author)
 
-			sender.Set(TextBox5_Label, "Player Level")
-			sender.Set(TextBox5_Value, "The players level is "+Game.GetPlayerLevel())
-
+			Client.Set(TextBox5_Label, "Player Level")
+			Client.Set(TextBox5_Value, "The players level is "+Game.GetPlayerLevel())
 		Else
 			WriteLine(self, "No scouter item is equipped.")
 		EndIf
@@ -78,5 +71,6 @@ EndEvent
 ;---------------------------------------------
 
 Group Properties
+	Fallout:Overlays:Client Property Client Auto Const Mandatory
 	Scouter:Plugin Property Plugin Auto Const Mandatory
 EndGroup

@@ -1,34 +1,27 @@
 Scriptname Fallout:Overlays:Framework extends Fallout:Overlays:Type
 import Fallout
 import Fallout:Overlays
+import Fallout:Overlays:Client
 import Fallout:Overlays:Papyrus
-
-;| Slot | Hexadecimal | Decimal |
-;|------------------------------|
-;| 30   | 0x00000001  | 1       |
-;| 47   | 0x00020000  | 131072  |
 
 Actor Player
 ;---------------------------------------------
-string URI
+string File
 string EquippedState = "Equipped" const
 ;---------------------------------------------
 int Invalid = -1 const
 int BipedEyes = 17 const
 bool ThirdPerson = false const
-
+;---------------------------------------------
 string ExamineMenu = "ExamineMenu" const
+string ScopeMenu = "ScopeMenu" const
 
 
 ; Events
 ;---------------------------------------------
 
-Event OnInit()
-	Player = Game.GetPlayer()
-EndEvent
-
-
 Event OnQuestInit()
+	Player = Game.GetPlayer()
 	RegisterForRemoteEvent(Player, "OnItemEquipped")
 	RegisterForRemoteEvent(Player, "OnItemUnequipped")
 EndEvent
@@ -68,7 +61,7 @@ EndFunction
 
 
 bool Function Equipment()
-	string value = GetURI()
+	string value = GetFile()
 	If (value) ; Do not allow a change to none/empty value. A none value is valid for TryChange.
 		If (TryChange(value))
 			return ChangeState(self, EquippedState)
@@ -81,8 +74,8 @@ bool Function Equipment()
 EndFunction
 
 
-string Function GetURI()
-	{Gets the URI string for any eye slot armor.}
+string Function GetFile()
+	{Gets the file path for any eye slot armor.}
 	; #1 Check the Armor's ObjectMods for any associated loose mod with an icon path.
 	; #2 Check the Armor's world model path.
 	; #3 Check the Armor's model path.
@@ -97,7 +90,7 @@ string Function GetURI()
 				While (index < mods.Length)
 					value = GetLooseMod(mods[index])
 					If (value)
-						WriteLine(self, "GetURI", "LooseMod:'"+value+"'")
+						WriteLine(self, "GetFile", "LooseMod:'"+value+"'")
 						return value
 					EndIf
 					index += 1
@@ -106,11 +99,11 @@ string Function GetURI()
 			;---------------------------------------------
 			value = GetWorldModel(worn)
 			If (value)
-				WriteLine(self, "GetURI", "WorldModel:'"+value+"'")
+				WriteLine(self, "GetFile", "WorldModel:'"+value+"'")
 				return value
 			Else
 				value = GetModel(worn)
-				WriteLine(self, "GetURI", "Model:'"+value+"'")
+				WriteLine(self, "GetFile", "Model:'"+value+"'")
 				return value
 			EndIf
 		EndIf
@@ -150,77 +143,14 @@ EndFunction
 
 
 bool Function TryChange(string value)
-	If (value != URI)
-		WriteChangedValue(self, "URI", URI, value)
-		URI = value
+	If (value != File)
+		WriteChangedValue(self, "File", File, value)
+		File = value
 		return true
 	Else
-		WriteUnexpectedValue(self, "TryChange", "value", "The URI already equals '"+value+"'")
+		WriteUnexpectedValue(self, "TryChange", "value", "The File already equals '"+value+"'")
 		return false
 	EndIf
-EndFunction
-
-
-; Client API
-;---------------------------------------------
-
-; UNUSED
-Armor Property Equipped Hidden
-	{Returns the equipped eyes item. This may be performance heavy?}
-	Armor Function Get()
-		return GetWorn().Item as Armor
-	EndFunction
-EndProperty
-
-
-; UNUSED
-Actor:WornItem Function GetWorn()
-	{Scans down the highest slot of an eye slot item.}
-	int slot = 0
-	While (slot <= BipedEyes)
-		Actor:WornItem worn = Player.GetWornItem(slot, ThirdPerson)
-		If (ItemFilter(worn.Item))
-			return worn
-		EndIf
-		slot += 1
-	EndWhile
-	WriteUnexpectedValue(self, "GetWorn", "value", "No biped slot has a valid eyes item.")
-	return none
-EndFunction
-
-;---------------------------------------------
-
-string Function GetMember(string member)
-	{Provides instance member paths the client.}
-	If (member)
-		return Menu.GetClientMember(member)
-	Else
-		WriteUnexpectedValue(self, "GetMember", "member", "The value cannot be none or empty.")
-		return ""
-	EndIf
-EndFunction
-
-
-var Function Get(string menuName, string member)
-	return UI.Get(Menu.Name, member)
-EndFunction
-
-
-bool Function Set(string member, var argument)
-	return UI.Set(Menu.Name, member, argument)
-EndFunction
-
-
-var Function Invoke(string member, var[] arguments = none)
-	return UI.Invoke(Menu.Name, member, arguments)
-EndFunction
-
-
-; Globals
-;---------------------------------------------
-
-Overlays:Framework Function OverlayFramework() Global
-	return Game.GetFormFromFile(0x00000F99, "Overlays.esp") as Overlays:Framework
 EndFunction
 
 
@@ -232,6 +162,8 @@ State Equipped
 		WriteLine(self, "Equipped.OnBeginState")
 		RegisterForCameraState()
 		RegisterForMenuOpenCloseEvent(Menu.Name)
+		RegisterForMenuOpenCloseEvent(ExamineMenu)
+		RegisterForMenuOpenCloseEvent(ScopeMenu)
 		RegisterForGameReload(self)
 		Menu.Open()
 	EndEvent
@@ -247,25 +179,32 @@ State Equipped
 		WriteLine(self, "Equipped.OnMenuOpenCloseEvent(menuName="+menuName+", opening="+opening+")")
 		If (menuName == Menu.Name)
 			If (opening)
-				Menu.SetURI(URI)
-				Menu.SetAlpha(Fallout_Overlays_Alpha.GetValue())
+				Menu.Load(File)
+				Menu.SetAlpha(Configuration.Alpha)
 				Menu.SetVisible(IsFirstPerson)
 			Else
 				Menu.Open()
 			EndIf
-
 			OpenCloseEventArgs e = new OpenCloseEventArgs
 			e.Opening = opening
-			self.SendOpenCloseEvent(e)
+			SendOpenCloseEvent(e)
+		EndIf
+
+		If (menuName == ScopeMenu)
+			If (opening)
+				Menu.AlphaTo(Configuration.ScopeAlpha, Configuration.AlphaSpeed)
+			Else
+				Menu.AlphaTo(Configuration.Alpha, Configuration.AlphaSpeed)
+			EndIf
 		EndIf
 
 		If (menuName == ExamineMenu && !opening)
-			Menu.SetURI(URI)
-		EndIF
+			Menu.Load(File)
+		EndIf
 	EndEvent
 
 	Event OnPlayerCameraState(int oldState, int newState)
-		WriteLine(self, "Equipped.OnPlayerCameraState(oldState="+oldState+", newState="+newState+")")
+		WriteLine(self, "Equipped.OnPlayerCameraState(oldState="+oldState+", newState="+newState+") -- IsFirstPerson:"+IsFirstPerson)
 		Menu.SetVisible(IsFirstPerson)
 	EndEvent
 
@@ -286,12 +225,12 @@ State Equipped
 	EndEvent
 
 	bool Function Equipment()
-		string value = GetURI()
+		string value = GetFile()
 		If (TryChange(value)) ; ALLOW a change to none/empty
 			If (!value)
 				return ClearState(self)
 			Else
-				return Menu.SetURI(URI)
+				return Menu.Load(File)
 			EndIf
 		Else
 			return false
@@ -310,54 +249,16 @@ State Equipped
 EndState
 
 
-; Open/Close Event
+; Client
 ;---------------------------------------------
-
-CustomEvent OpenCloseEvent
-
-Struct OpenCloseEventArgs
-	bool Opening = false
-EndStruct
-
 
 Function SendOpenCloseEvent(OpenCloseEventArgs e)
 	If (e)
 		var[] arguments = new var[1]
 		arguments[0] = e
-		self.SendCustomEvent("OpenCloseEvent", arguments)
+		Client.SendCustomEvent("OpenCloseEvent", arguments)
 	Else
-		WriteLine(self, "SendOpenCloseEvent : e : Cannot be none.")
-	EndIf
-EndFunction
-
-
-bool Function RegisterForOpenCloseEvent(ScriptObject script)
-	If (script)
-		script.RegisterForCustomEvent(self, "OpenCloseEvent")
-		return true
-	Else
-		WriteLine(self, "RegisterForOpenCloseEvent : script : Cannot register a none script for events.")
-		return false
-	EndIf
-EndFunction
-
-
-bool Function UnregisterForOpenCloseEvent(ScriptObject script)
-	If (script)
-		script.UnregisterForCustomEvent(self, "OpenCloseEvent")
-		return true
-	Else
-		WriteLine(self, "UnregisterForOpenCloseEvent : script : Cannot unregister a none script for events.")
-		return false
-	EndIf
-EndFunction
-
-
-OpenCloseEventArgs Function GetOpenCloseEventArgs(var[] arguments)
-	If (arguments)
-		return arguments[0] as OpenCloseEventArgs
-	Else
-		return none
+		WriteUnexpectedValue(self, "SendOpenCloseEvent", "e", "The argument cannot be none.")
 	EndIf
 EndFunction
 
@@ -367,17 +268,18 @@ EndFunction
 
 Group Properties
 	Keyword Property ArmorBodyPartEyes Auto Const Mandatory
-	GlobalVariable Property Fallout_Overlays_Alpha Auto Const Mandatory
 EndGroup
 
 Group Overlay
 	Overlays:Menu Property Menu Auto Const Mandatory
+	Overlays:Client Property Client Auto Const Mandatory
+	Overlays:Configuration Property Configuration Auto Const Mandatory
 EndGroup
 
 Group Camera
 	bool Property IsFirstPerson Hidden
 		bool Function Get()
-			return Player.GetAnimationVariableBool("IsFirstPerson")
+			return Game.GetCameraState() == 0
 		EndFunction
 	EndProperty
 EndGroup

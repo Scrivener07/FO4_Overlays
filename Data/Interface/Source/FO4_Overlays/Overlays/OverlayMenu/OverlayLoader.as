@@ -11,13 +11,8 @@
 	import System.IO.FileSystem;
 	import System.IO.Path;
 
-	/**
-	 * This still wont switch from one overlay to another.
-	 * Unloading the entire menu makes it work. (unequipping)
-	 */
 	public dynamic class OverlayLoader extends LoaderType
 	{
-
 		// Initialize
 		//---------------------------------------------
 
@@ -53,7 +48,7 @@
 				path = Path.ChangeExtension(filepath, extension);
 			}
 
-			if (extension == File.SWF && File.ExistsIn(XSE, FileSystem.Interface, path))
+			if (extension == File.SWF && File.ExistsIn(F4SE, FileSystem.Interface, path))
 			{
 				Debug.WriteLine("[OverlayLoader]", "Found SWF:", "path:"+path);
 				return super.Load(path);
@@ -64,7 +59,7 @@
 				path = Path.ChangeExtension(filepath, extension);
 			}
 
-			if (extension == File.DDS && File.ExistsIn(XSE, FileSystem.Textures, path))
+			if (extension == File.DDS && File.ExistsIn(F4SE, FileSystem.Textures, path))
 			{
 				Debug.WriteLine("[OverlayLoader]", "Found DDS:", "path:"+path);
 				return super.Load(path);
