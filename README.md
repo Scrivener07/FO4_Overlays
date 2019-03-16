@@ -20,7 +20,7 @@ Check out the [video playlist](https://www.youtube.com/playlist?list=PLdEgiq4ka
 
 ### Mods
 * [ODST Battle Armor](https://www.nexusmods.com/fallout4/mods/32310)
-* [The Commonwealth Spartan](https://discord.gg/sUAGqNJ)
+* [The Commonwealth Spartan](https://discord.gg/sUAGqNJ) (Discord)
 
 ### Acknowledgements
 * Thank you [Neanka](https://www.nexusmods.com/fallout4/users/6719842), for providing a critical bug fix.
