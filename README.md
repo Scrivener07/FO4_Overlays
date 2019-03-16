@@ -1,3 +1,4 @@
+![Fallout 4 Scopes Framework](Documents/Nexus.jpg)
 # Fallout 4 Overlays Framework
 A framework that loads unique HUD elements when eye covering items are equipped.
 Check out the [video playlist](https://www.youtube.com/playlist?list=PLdEgiq4kaju2y86_Y3uuj5GmIeuVEGtrZ) for work in progress footage.
