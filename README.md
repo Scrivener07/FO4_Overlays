@@ -14,13 +14,15 @@ Check out the [video playlist](https://www.youtube.com/playlist?list=PLdEgiq4ka
 
 ### Installation
 * Install with your preferred mod manager, or copy the files into your Fallout 4 data directory.
-* Activate `Overlays.esp` anywhere within your load order.
+* Activate `Overlays.esm` anywhere within your load order.
 * Download and install mods that make use of this framework.
 * Launch the game.
 
 ### Acknowledgements
+* Thank you [Neanka](https://www.nexusmods.com/fallout4/users/6719842), for providing a critical bug fix.
+* Thank you [Arha](https://github.com/ianpatt), for implementing an F4SE feature request this mod relies on.
 * Thank you [Expired](https://www.nexusmods.com/users/2950481), for the above & beyond assistance.
-* Thanks to the F4SE team for their continued efforts to make mods like this possible.
+* Thanks to the [F4SE Team](https://www.reddit.com/r/f4se/) for their continued efforts to make mods like this possible.
 
 ### Resources
 * The source code in its entirety can be found on [GitHub.com](https://github.com/Scrivener07/FO4_Overlays), under the permissive MIT license.
