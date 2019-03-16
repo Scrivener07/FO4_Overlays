@@ -29,6 +29,6 @@ Check out the [video playlist](https://www.youtube.com/playlist?list=PLdEgiq4ka
 * Thanks to the [F4SE Team](https://www.reddit.com/r/f4se/) for their continued efforts to make mods like this possible.
 
 ### Resources
-* [Overlay Framework Template](https://www.nexusmods.com/fallout4/images/128427]
+* [Overlay Framework Template](https://www.nexusmods.com/fallout4/images/128427)
 * The source code in its entirety can be found on [GitHub.com](https://github.com/Scrivener07/FO4_Overlays), under the permissive MIT license.
 * Visit [Scribes Discord](https://discord.gg/uhqu9ey) for technical support and discussions.
