@@ -3,15 +3,16 @@
 A framework that loads unique HUD elements when eye covering items are equipped.
 Check out the [video playlist](https://www.youtube.com/playlist?list=PLdEgiq4kaju2y86_Y3uuj5GmIeuVEGtrZ) for work in progress footage.
 
+### Features
+* A framework that loads unique HUD elements when eye covering items are equipped.
+* Authors may easily create custom content with Adobe Animate (Flash) or Photoshop. No data plugins, no scripts!
+* Optional advanced API for overlays to interact with Papyrus scripting.
+* "it just works" 😉
+
 ### Requirements
 * Requires a computer, PC only.
 * Requires the latest version of Fallout 4.
 * Requires the latest version of F4SE.
-
-### Features
-* A framework that loads unique HUD elements when eye covering items are equipped.
-* Authors may easily create custom content with Adobe Animate (Flash) or Photoshop. No data plugins, no scripts!
-* "it just works"
 
 ### Installation
 * Install with your preferred mod manager, or copy the files into your Fallout 4 data directory.
