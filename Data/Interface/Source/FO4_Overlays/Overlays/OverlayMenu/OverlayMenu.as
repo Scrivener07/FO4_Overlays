@@ -5,6 +5,7 @@
 	import F4SE.ICodeObject;
 	import flash.display.MovieClip;
 	import System.Diagnostics.Debug;
+	import System.Diagnostics.Utility;
 
 	// TODO: Expose the "Client" string variable path to papyrus.
 
@@ -41,7 +42,8 @@
 		// @F4SE.ICodeObject
 		public function onF4SEObjCreated(codeObject:*):void
 		{
-			Overlay.onF4SEObjCreated(codeObject);
+			F4SE.Extensions.API = codeObject;
+			Utility.TraceObject(F4SE.Extensions.GetVersion());
 		}
 
 

@@ -1,17 +1,8 @@
 ﻿package
 {
-	import Components.LoaderType;
-	import F4SE.Extensions;
-	import flash.display.MovieClip;
-	import flash.events.Event;
-	import System.Diagnostics.Debug;
-	import System.Diagnostics.Utility;
-	import System.Display;
-	import System.IO.File;
-	import System.IO.FileSystem;
-	import System.IO.Path;
+	import Components.PriorityLoader;
 
-	public dynamic class OverlayLoader extends LoaderType
+	public dynamic class OverlayLoader extends PriorityLoader
 	{
 		// Initialize
 		//---------------------------------------------
@@ -20,58 +11,6 @@
 		{
 			super(menuName, mountID);
 		}
-
-
-		// Events
-		//---------------------------------------------
-
-		override protected function OnLoadComplete(e:Event):void
-		{
-			Display.ScaleToHeight(Content, Display.DefaultHeight);
-			super.OnLoadComplete(e);
-			Utility.TraceDisplayList(MovieClip(stage.getChildAt(0)));
-			Debug.WriteLine("[OverlayLoader]", "(OnLoadComplete)", e.toString()+", "+toString());
-		}
-
-
-		// Methods
-		//---------------------------------------------
-
-		override public function Load(filepath:String):Boolean
-		{
-			var extension:String = Path.GetExtension(filepath);
-			var path:String = filepath;
-
-			if (extension == File.NIF)
-			{
-				extension = File.SWF;
-				path = Path.ChangeExtension(filepath, extension);
-			}
-
-			if (extension == File.SWF && File.ExistsIn(F4SE, FileSystem.Interface, path))
-			{
-				Debug.WriteLine("[OverlayLoader]", "Found SWF:", "path:"+path);
-				return super.Load(path);
-			}
-			else
-			{
-				extension = File.DDS;
-				path = Path.ChangeExtension(filepath, extension);
-			}
-
-			if (extension == File.DDS && File.ExistsIn(F4SE, FileSystem.Textures, path))
-			{
-				Debug.WriteLine("[OverlayLoader]", "Found DDS:", "path:"+path);
-				return super.Load(path);
-			}
-			else
-			{
-				Debug.WriteLine("[OverlayLoader]", "No overlay file was found.");
-				Unload();
-				return false;
-			}
-		}
-
 
 	}
 }
