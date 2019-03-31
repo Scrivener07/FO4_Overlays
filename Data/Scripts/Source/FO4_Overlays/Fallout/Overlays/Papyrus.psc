@@ -77,6 +77,7 @@ EndFunction
 ;---------------------------------------------
 
 bool Function TraceKeywords(Form aForm) Global DebugOnly
+	{Traces each Keyword on the given Form type.}
 	string prefix = "[Papyrus.psc TraceKeywords]" const
 	If (aForm)
 		Keyword[] array = aForm.GetKeywords()
@@ -99,6 +100,7 @@ EndFunction
 
 
 bool Function TracePropertyModifiers(ObjectMod aObjectMod) Global DebugOnly
+	{Traces each property modifier on the given ObjectMod type.}
 	string prefix = "[Papyrus.psc TracePropertyModifiers]" const
 	If (aObjectMod)
 		ObjectMod:PropertyModifier[] array = aObjectMod.GetPropertyModifiers()
