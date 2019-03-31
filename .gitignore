@@ -1,7 +1,19 @@
-# Project
+# Overlays Framework
+# =========================
+/Build/
+/Release/
+
+
+# Bethesda Modding
 # =========================
 *.pex
 *.swf
+*.wav
+*.nif
+*.hkx
+*.dds
+*.bgsm
+*.bgem
 
 # Windows
 # =========================
