@@ -1,4 +1,5 @@
 Scriptname Fallout:Overlays:Framework extends Fallout:Overlays:Type
+{The framework is used to track equipment changes on the player.}
 import Fallout
 import Fallout:Overlays
 import Fallout:Overlays:Client
@@ -33,15 +34,17 @@ Event OnQuestShutdown()
 EndEvent
 
 
-Event Actor.OnItemEquipped(Actor sender, Form baseObject, ObjectReference reference)
-	If (ItemFilter(baseObject))
-		WriteLine(self, "Actor.OnItemEquipped", "baseObject="+baseObject)
+Event Actor.OnItemEquipped(Actor sender, Form object, ObjectReference reference)
+	{Evaluates the equipped object.}
+	If (ItemFilter(object))
+		WriteLine(self, "Actor.OnItemEquipped", "object="+object)
 		Equipment()
 	EndIf
 EndEvent
 
 
-Event Actor.OnItemUnequipped(Actor sender, Form baseObject, ObjectReference reference)
+; Any unequipped item events are ignored in the empty state.
+Event Actor.OnItemUnequipped(Actor sender, Form object, ObjectReference reference)
 	{EMPTY}
 EndEvent
 
@@ -50,19 +53,16 @@ EndEvent
 ;---------------------------------------------
 
 bool Function ItemFilter(Form item)
+	{Returns true if the given Form is of type Armor and occupies the Eye slot.}
 	Armor armo = item as Armor
-	return armo && HasSlotMask(armo, kSlotMask47)
-EndFunction
-
-
-bool Function HasSlotMask(Armor armo, int value) Global
-	return Math.LogicalAnd(armo.GetSlotMask(), value) == value
+	return armo && HasSlot(armo, kSlotMask47)
 EndFunction
 
 
 bool Function Equipment()
+	{Checks the players equipment for changes. This will NOT allow a change to a none or empty value.}
 	string value = GetFile()
-	If (value) ; Do not allow a change to none/empty value. A none value is valid for TryChange.
+	If (value)
 		If (TryChange(value))
 			return ChangeState(self, EquippedState)
 		Else
@@ -124,7 +124,6 @@ string Function GetLooseMod(ObjectMod omod)
 EndFunction
 
 
-; TODO: The F4SE function GetWorldModelPath does not seem to work on Armor forms.
 string Function GetWorldModel(Actor:WornItem worn)
 	{Derived from the armor world model path.}
 	Armor armo = worn.Item as Armor
@@ -143,6 +142,7 @@ EndFunction
 
 
 bool Function TryChange(string value)
+	{A none value is valid for TryChange.}
 	If (value != File)
 		WriteChangedValue(self, "File", File, value)
 		File = value
@@ -210,23 +210,26 @@ State Equipped
 
 	;---------------------------------------------
 
-	Event Actor.OnItemEquipped(Actor sender, Form baseObject, ObjectReference reference)
-		If (ItemFilter(baseObject))
-			WriteLine(self, "Equipped.Actor.OnItemEquipped", "baseObject="+baseObject)
+	Event Actor.OnItemEquipped(Actor sender, Form object, ObjectReference reference)
+		{Evaluates the equipped object.}
+		If (ItemFilter(object))
+			WriteLine(self, "Equipped.Actor.OnItemEquipped", "object="+object)
 			Equipment()
 		EndIf
 	EndEvent
 
-	Event Actor.OnItemUnequipped(Actor sender, Form baseObject, ObjectReference reference)
-		If (ItemFilter(baseObject))
-			WriteLine(self, "Equipped.Actor.OnItemUnequipped", "baseObject="+baseObject)
+	Event Actor.OnItemUnequipped(Actor sender, Form object, ObjectReference reference)
+		{Evaluates the unequipped object.}
+		If (ItemFilter(object))
+			WriteLine(self, "Equipped.Actor.OnItemUnequipped", "object="+object)
 			Equipment()
 		EndIf
 	EndEvent
 
 	bool Function Equipment()
+		{Checks the players equipment for changes. This will ALLOW a change to none or empty.}
 		string value = GetFile()
-		If (TryChange(value)) ; ALLOW a change to none/empty
+		If (TryChange(value))
 			If (!value)
 				return ClearState(self)
 			Else
@@ -261,6 +264,42 @@ Function SendOpenCloseEvent(OpenCloseEventArgs e)
 		WriteUnexpectedValue(self, "SendOpenCloseEvent", "e", "The argument cannot be none.")
 	EndIf
 EndFunction
+
+
+Function SendLoadedEvent(LoadedEventArgs e)
+	If (e)
+		var[] arguments = new var[1]
+		arguments[0] = e
+		Client.SendCustomEvent("LoadedEvent", arguments)
+	Else
+		WriteUnexpectedValue(self, "SendLoadedEvent", "e", "The argument cannot be none.")
+	EndIf
+EndFunction
+
+
+Actor:WornItem Function GetWorn()
+	{Scans down the highest slot of an eye slot armor.}
+	int slot = 0
+	While (slot <= BipedEyes)
+		Actor:WornItem worn = Player.GetWornItem(slot, ThirdPerson)
+		If (ItemFilter(worn.Item))
+			return worn
+		EndIf
+		slot += 1
+	EndWhile
+	WriteUnexpectedValue(self, "GetWorn", "value", "No biped slot has a valid eyes item.")
+	return none
+EndFunction
+
+
+; Armor
+;---------------------------------------------
+
+bool Function HasSlot(Armor armo, int value) Global
+	{Returns true if the given Armor contains the Eye slot within it's slot mask.}
+	return Math.LogicalAnd(armo.GetSlotMask(), value) == value
+EndFunction
+
 
 
 ; Properties

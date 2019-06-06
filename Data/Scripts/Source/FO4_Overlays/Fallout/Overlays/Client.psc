@@ -4,7 +4,6 @@ import Fallout:Overlays
 import Fallout:Overlays:Papyrus
 
 Actor Player
-int BipedEyes = 17 const
 bool ThirdPerson = false const
 
 
@@ -19,25 +18,10 @@ EndEvent
 ; Methods
 ;---------------------------------------------
 
-Actor:WornItem Function GetWorn()
-	{Scans down the highest slot of an eye slot item.}
-	int slot = 0
-	While (slot <= BipedEyes)
-		Actor:WornItem worn = Player.GetWornItem(slot, ThirdPerson)
-		If (Framework.ItemFilter(worn.Item))
-			return worn
-		EndIf
-		slot += 1
-	EndWhile
-	WriteUnexpectedValue(self, "GetWorn", "value", "No biped slot has a valid eyes item.")
-	return none
-EndFunction
-
-
 string Function GetMember(string member)
-	{Provides instance member paths the client.}
+	{Provides the instance variable path for client members.}
 	If (member)
-		return Menu.GetClientMember(member)
+		return Menu.GetMember(Menu.Client+"."+member)
 	Else
 		WriteUnexpectedValue(self, "GetMember", "member", "The value cannot be none or empty.")
 		return ""
@@ -101,17 +85,64 @@ OpenCloseEventArgs Function GetOpenCloseEventArgs(var[] arguments)
 EndFunction
 
 
+; Loaded Event
+;---------------------------------------------
+
+CustomEvent LoadedEvent
+
+Struct LoadedEventArgs
+	bool Success = false
+	string Instance = ""
+EndStruct
+
+
+bool Function RegisterForLoadedEvent(ScriptObject script)
+	If (script)
+		script.RegisterForCustomEvent(self, "LoadedEvent")
+		return true
+	Else
+		WriteUnexpectedValue(self, "RegisterForLoadedEvent", "script", "Cannot register a none script for events.")
+		return false
+	EndIf
+EndFunction
+
+
+bool Function UnregisterForLoadedEvent(ScriptObject script)
+	If (script)
+		script.UnregisterForCustomEvent(self, "LoadedEvent")
+		return true
+	Else
+		WriteUnexpectedValue(self, "UnregisterForLoadedEvent", "script", "Cannot unregister a none script for events.")
+		return false
+	EndIf
+EndFunction
+
+
+LoadedEventArgs Function GetLoadedEventArgs(var[] arguments)
+	If (arguments)
+		return arguments[0] as LoadedEventArgs
+	Else
+		return none
+	EndIf
+EndFunction
+
+
 ; Properties
 ;---------------------------------------------
 
-Group Overlay
-	Fallout:Overlays:Framework Property Framework Auto Const Mandatory
-	Fallout:Overlays:Menu Property Menu Auto Const Mandatory
+Group Properties
+	Armor Property Equipped Hidden
+		{Returns the equipped eyes item.}
+		Armor Function Get()
+			return Framework.GetWorn().Item as Armor
+		EndFunction
+	EndProperty
 EndGroup
 
-Armor Property Equipped Hidden
-	{Returns the equipped eyes item.}
-	Armor Function Get()
-		return GetWorn().Item as Armor
-	EndFunction
-EndProperty
+Group Private
+	Fallout:Overlays:Framework Property Framework Auto Const Mandatory
+	{Private- The framework is used to track equipment changes on the player.}
+
+	Fallout:Overlays:Menu Property Menu Auto Const Mandatory
+	{Private- Provides an abstraction for interacting with the overlay menu.}
+EndGroup

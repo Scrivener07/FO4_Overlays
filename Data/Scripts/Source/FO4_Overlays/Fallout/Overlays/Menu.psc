@@ -1,7 +1,12 @@
 Scriptname Fallout:Overlays:Menu extends Fallout:Overlays:Type
+{Provides an abstraction for interacting with the overlay menu.}
+import Fallout
 import Fallout:Overlays
+import Fallout:Overlays:Client
 import Fallout:Overlays:Papyrus
 
+string ClientInstance
+string ClientLoadedCallback = "OverlayMenu_ClientLoadedCallback" const
 
 ; Events
 ;---------------------------------------------
@@ -17,11 +22,26 @@ Event OnGameReload()
 	data.MenuFlags = FlagDoNotPreventGameSave
 	data.ExtendedFlags = FlagNone
 	If (UI.RegisterCustomMenu(Name, Path, Root, data))
+		RegisterForExternalEvent(ClientLoadedCallback, "OnClientLoaded")
 		WriteLine(self, ToString()+" has registered as a custom menu.")
 	Else
 		WriteUnexpected(self, "OnGameReload", ToString()+" failed to register as a custom menu.")
 	EndIf
 EndEvent
+
+
+Function OnClientLoaded(bool success, string instance)
+	WriteLine(self, "OnClientLoaded", "success:"+success+", instance:"+instance)
+	If (success)
+		ClientInstance = instance
+	Else
+		ClientInstance = ""
+	EndIf
+	LoadedEventArgs e = new LoadedEventArgs
+	e.Success = success
+	e.Instance = instance
+	Framework.SendLoadedEvent(e)
+EndFunction
 
 
 ; Methods
@@ -139,19 +159,9 @@ string Function GetMember(string member)
 EndFunction
 
 
-string Function GetClientMember(string member)
-	If (member)
-		return GetMember(Client+"."+member)
-	Else
-		WriteUnexpectedValue(self, "GetClientMember", "member", "The value cannot be none or empty.")
-		return ""
-	EndIf
-EndFunction
-
-
 string Function ToString()
 	{The string representation of this type.}
-	return "[Name:"+Name+", Path:"+Path+", Root:"+Root+"]"
+	return "[Name:"+Name+", Path:"+Path+", Root:"+Root+", Client:"+Client+"]"
 EndFunction
 
 
@@ -159,6 +169,8 @@ EndFunction
 ;---------------------------------------------
 
 Group Properties
+	Overlays:Framework Property Framework Auto Const Mandatory
+
 	string Property Name Hidden
 		string Function Get()
 			{The name of this menu.}
@@ -183,8 +195,7 @@ Group Properties
 	string Property Client Hidden
 		string Function Get()
 			{The instance path of the client's display object.}
-			; TODO: This will change if any display objects are added or removed in the Flash editor.
-			return "Overlay.instance3"
+			return ClientInstance
 		EndFunction
 	EndProperty
 
